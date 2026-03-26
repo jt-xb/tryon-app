@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>穿搭试衣间</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #1a1a2e;
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  h1 { font-size: 20px; margin-bottom: 16px; color: #e94560; }
+  
+  .tryon-stage {
+    position: relative;
+    width: 280px;
+    height: 420px;
+    background: linear-gradient(180deg, #16213e 0%, #0f3460 100%);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 32px rgba(233, 69, 96, 0.3);
+  }
+  
+  .layer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+  }
+  
+  .layer-base { z-index: 1; }
+  .layer-bottom { z-index: 2; }
+  .layer-top { z-index: 3; }
+  .layer-shoes { z-index: 4; }
+  .layer-hat { z-index: 5; }
+  .layer-accessory { z-index: 6; }
+  
+  .layer img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+  }
+  
+  /* placeholder figures */
+  .placeholder-figure {
+    width: 120px;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .ph-head {
+    width: 50px; height: 50px;
+    background: #f5d0c5;
+    border-radius: 50%;
+    margin-bottom: 8px;
+  }
+  .ph-body {
+    width: 60px; height: 80px;
+    background: #f5d0c5;
+    border-radius: 8px 8px 4px 4px;
+  }
+  .ph-legs {
+    width: 60px; height: 120px;
+    background: #f5d0c5;
+    border-radius: 4px;
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+  }
+  .ph-leg { width: 26px; height: 120px; background: #f5d0c5; border-radius: 4px; }
+  
+  /* outfit pieces (colored rectangles as placeholders) */
+  .outfit-piece {
+    position: absolute;
+    border-radius: 6px;
+    opacity: 0.9;
+  }
+  .piece-top {
+    top: 105px; left: 50%; transform: translateX(-50%);
+    width: 80px; height: 70px;
+  }
+  .piece-bottom {
+    top: 175px; left: 50%; transform: translateX(-50%);
+    width: 70px; height: 100px;
+  }
+  .piece-shoes {
+    bottom: 30px; left: 50%; transform: translateX(-50%);
+    width: 70px; height: 30px;
+  }
+  .piece-hat {
+    top: 5px; left: 50%; transform: translateX(-50%);
+    width: 60px; height: 35px;
+  }
+  
+  .wardrobe {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    width: 100%;
+    max-width: 360px;
+  }
+  .clothes-item {
+    aspect-ratio: 1;
+    background: #16213e;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+    padding: 8px;
+  }
+  .clothes-item.selected { border-color: #e94560; background: #1f2a50; }
+  .clothes-item .preview {
+    width: 50px; height: 50px;
+    border-radius: 6px;
+    margin-bottom: 4px;
+  }
+  .clothes-item span { font-size: 11px; color: #aaa; }
+  
+  .section-title {
+    font-size: 14px;
+    color: #e94560;
+    margin: 16px 0 8px;
+    width: 100%;
+    max-width: 360px;
+  }
+  
+  .btn {
+    background: #e94560;
+    color: #fff;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 25px;
+    font-size: 15px;
+    cursor: pointer;
+    margin: 16px 0;
+    width: 100%;
+    max-width: 200px;
+  }
+  .btn:active { transform: scale(0.97); }
+  
+  #camera-input { display: none; }
+  
+  .color-dot {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    display: inline-block;
+  }
+</style>
+</head>
+<body>
+
+<h1>✨ 穿搭试衣间</h1>
+
+<div class="tryon-stage" id="stage">
+  <!-- Base body -->
+  <div class="layer layer-base">
+    <div class="placeholder-figure">
+      <div class="ph-head"></div>
+      <div class="ph-body"></div>
+      <div class="ph-legs"><div class="ph-leg"></div><div class="ph-leg"></div></div>
+    </div>
+  </div>
+  
+  <!-- Clothing layers (populated by JS) -->
+  <div class="layer layer-bottom" id="layer-bottom"></div>
+  <div class="layer layer-top" id="layer-top"></div>
+  <div class="layer layer-shoes" id="layer-shoes"></div>
+  <div class="layer layer-hat" id="layer-hat"></div>
+</div>
+
+<button class="btn" onclick="document.getElementById('camera-input').click()">📷 拍照上传</button>
+<input type="file" id="camera-input" accept="image/*" capture="environment" onchange="handlePhoto(this)">
+
+<div class="section-title">👕 上衣</div>
+<div class="wardrobe" id="wardrobe-top"></div>
+
+<div class="section-title">👖 下装</div>
+<div class="wardrobe" id="wardrobe-bottom"></div>
+
+<div class="section-title">👟 鞋子</div>
+<div class="wardrobe" id="wardrobe-shoes"></div>
+
+<div class="section-title">🎩 帽子</div>
+<div class="wardrobe" id="wardrobe-hat"></div>
+
+<script>
+// Wardrobe data
+const wardrobe = {
+  top: [
+    { id: 't1', name: '红色T恤', color: '#e94560' },
+    { id: 't2', name: '蓝色卫衣', color: '#4361ee' },
+    { id: 't3', name: '白色衬衫', color: '#f8f9fa' },
+    { id: 't4', name: '黑色外套', color: '#212529' },
+    { id: 't5', name: '绿色毛衣', color: '#2d6a4f' },
+    { id: 't6', name: '黄色开衫', color: '#ffd60a' },
+  ],
+  bottom: [
+    { id: 'b1', name: '黑色牛仔裤', color: '#343a40' },
+    { id: 'b2', name: '蓝色牛仔', color: '#4895ef' },
+    { id: 'b3', name: '灰色休闲裤', color: '#6c757d' },
+    { id: 'b4', name: '卡其工装', color: '#c9a227' },
+  ],
+  shoes: [
+    { id: 's1', name: '白色运动鞋', color: '#f8f9fa' },
+    { id: 's2', name: '黑色靴子', color: '#212529' },
+    { id: 's3', name: '棕色皮鞋', color: '#8b4513' },
+    { id: 's4', name: '灰色帆布', color: '#adb5bd' },
+  ],
+  hat: [
+    { id: 'h1', name: '黑色棒球帽', color: '#212529' },
+    { id: 'h2', name: '灰色毛线帽', color: '#6c757d' },
+    { id: 'h3', name: '米色渔夫帽', color: '#e9ecef' },
+  ]
+};
+
+// Selected items
+const selected = { top: null, bottom: null, shoes: null, hat: null };
+
+// Render wardrobe items
+function renderWardrobe() {
+  ['top', 'bottom', 'shoes', 'hat'].forEach(category => {
+    const container = document.getElementById(`wardrobe-${category}`);
+    container.innerHTML = '';
+    wardrobe[category].forEach(item => {
+      const el = document.createElement('div');
+      el.className = `clothes-item${selected[category]?.id === item.id ? ' selected' : ''}`;
+      el.innerHTML = `
+        <div class="preview" style="background:${item.color}"></div>
+        <span>${item.name}</span>
+      `;
+      el.onclick = () => toggleItem(category, item);
+      container.appendChild(el);
+    });
+  });
+}
+
+// Toggle clothing selection
+function toggleItem(category, item) {
+  if (selected[category]?.id === item.id) {
+    selected[category] = null;
+  } else {
+    selected[category] = item;
+  }
+  renderWardrobe();
+  renderTryon();
+}
+
+// Render try-on stage
+function renderTryon() {
+  const positions = {
+    top: { top: '105px', width: '80px', height: '70px', left: '50%', transform: 'translateX(-50%)' },
+    bottom: { top: '175px', width: '70px', height: '100px', left: '50%', transform: 'translateX(-50%)' },
+    shoes: { bottom: '30px', width: '70px', height: '30px', left: '50%', transform: 'translateX(-50%)' },
+    hat: { top: '5px', width: '60px', height: '35px', left: '50%', transform: 'translateX(-50%)' },
+  };
+  
+  ['top', 'bottom', 'shoes', 'hat'].forEach(category => {
+    const layer = document.getElementById(`layer-${category}`);
+    layer.innerHTML = '';
+    if (selected[category]) {
+      const piece = document.createElement('div');
+      piece.className = 'outfit-piece';
+      piece.style.background = selected[category].color;
+      Object.assign(piece.style, positions[category]);
+      layer.appendChild(piece);
+    }
+  });
+}
+
+// Handle photo upload
+function handlePhoto(input) {
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      // Could integrate remove.bg API here
+      alert('照片已上传！\n实际项目可接入 remove.bg 自动抠图');
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+// Init
+renderWardrobe();
+renderTryon();
+</script>
+
+</body>
+</html>
