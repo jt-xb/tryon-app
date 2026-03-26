@@ -798,7 +798,93 @@ window.renderWardrobe = function() {
 // Init hook for v3
 const _init = init;
 window.init = function() {
-  _init();
+  _
+// v6: AI color matching suggestion, outfit naming AI-style, better wardrobe UX
+
+// Color harmony rules for suggestions
+window.getColorSuggestion = function() {
+  if (!wardrobe.length) return null;
+  const tips = [
+    {match:['红','粉'], tip:'红+粉 少女感十足💕'},
+    {match:['红','黑'], tip:'红+黑 气场全开🖤'},
+    {match:['蓝','白'], tip:'蓝+白 清爽干净🤍'},
+    {match:['绿','黄'], tip:'绿+黄 复古田园🌿'},
+    {match:['紫','粉'], tip:'紫+粉 梦幻甜美💜'},
+    {match:['灰','蓝'], tip:'灰+蓝 简约高级💙'},
+    {match:['黑','白'], tip:'黑白配 永不过时⚫⚪'},
+    {match:['棕','绿'], tip:'棕+绿 文艺自然🍂'},
+  ];
+  const worn = CATS.map(c => wardrobe.find(i=>i.id==(tryon[c]&&tryon[c].id)));
+  const wornColors = worn.filter(Boolean).map(i=>i.color).filter(Boolean);
+  for (const t of tips) {
+    if (t.match.every(c => wornColors.includes(c))) {
+      return t.tip;
+    }
+  }
+  return wornColors.length >= 2 ? '当前搭配颜色已选中~' : '多选几件试试？';
+};
+
+window.showColorTip = function() {
+  const tip = getColorSuggestion();
+  if (!tip) return;
+  const tipEl = document.getElementById('color-suggestion');
+  if (!tipEl) {
+    const stage = document.querySelector('.stage-wrapper');
+    if (!stage) return;
+    tipEl = document.createElement('div');
+    tipEl.id = 'color-suggestion';
+    tipEl.style.cssText = 'background:rgba(255,255,255,0.9);border-radius:12px;padding:8px 14px;font-size:11px;color:var(--pink-deep);text-align:center;margin-top:8px;box-shadow:0 2px 8px rgba(233,30,140,0.1);border:1px solid rgba(255,107,157,0.15);';
+    stage.appendChild(tipEl);
+  }
+  tipEl.textContent = tip;
+};
+
+// Auto-show tip when tryon changes
+const _updateTryonMini = updateTryonMini;
+window.updateTryonMini = function() {
+  _updateTryonMini();
+  setTimeout(showColorTip, 100);
+};
+
+// Add "what to wear today" suggestion panel
+window.suggestToday = function() {
+  const scene = document.getElementById('scene-select').value;
+  const sceneClothes = {
+    daily: {top:'top', bottom:'bottom', shoes:'shoes'},
+    work: {top:'top', bottom:'bottom', shoes:'shoes'},
+    date: {top:'top', bottom:'bottom', shoes:'shoes', hat:'hat'},
+    party: {top:'top', bottom:'bottom', shoes:'shoes', hat:'hat'},
+    sport: {top:'top', bottom:'bottom', shoes:'shoes'},
+  };
+  const needed = sceneClothes[scene] || sceneClothes.daily;
+  CATS.forEach(c => tryon[c] = null);
+  Object.entries(needed).forEach(([cat, preferred]) => {
+    const items = wardrobe.filter(i => i.cat === cat);
+    if (items.length) tryon[cat] = items[0];
+  });
+  // Dress mode
+  if (Math.random() > 0.5 && wardrobe.filter(i=>i.cat==='dress').length) {
+    tryon.top = null; tryon.bottom = null;
+    tryon.dress = wardrobe.find(i=>i.cat==='dress');
+  }
+  renderTryon(); updateTryonMini(); renderWardrobe();
+  switchTab('tryon');
+  toast('已推荐'+scene+'穿搭✨');
+};
+
+// Scene-based suggestions panel
+window.addSceneSuggestions = function() {
+  const todayBar = document.getElementById('today-bar');
+  if (!todayBar) return;
+  const btn = document.createElement('button');
+  btn.className = 'save-btn';
+  btn.textContent = '🤖 智能推荐';
+  btn.onclick = suggestToday;
+  btn.style.background = 'linear-gradient(135deg,#9c27b0,#7b1fa2)';
+  todayBar.appendChild(btn);
+};
+
+init();
   addSeasonChips(); addColorPills();
   // Add random outfit button to tryon page
   const ctrlPanel = document.querySelector('.tryon-controls');
@@ -809,6 +895,92 @@ window.init = function() {
     randBtn.onclick = randomOutfit;
     ctrlPanel.insertBefore(randBtn, ctrlPanel.firstChild);
   }
+};
+
+
+// v6: AI color matching suggestion, outfit naming AI-style, better wardrobe UX
+
+// Color harmony rules for suggestions
+window.getColorSuggestion = function() {
+  if (!wardrobe.length) return null;
+  const tips = [
+    {match:['红','粉'], tip:'红+粉 少女感十足💕'},
+    {match:['红','黑'], tip:'红+黑 气场全开🖤'},
+    {match:['蓝','白'], tip:'蓝+白 清爽干净🤍'},
+    {match:['绿','黄'], tip:'绿+黄 复古田园🌿'},
+    {match:['紫','粉'], tip:'紫+粉 梦幻甜美💜'},
+    {match:['灰','蓝'], tip:'灰+蓝 简约高级💙'},
+    {match:['黑','白'], tip:'黑白配 永不过时⚫⚪'},
+    {match:['棕','绿'], tip:'棕+绿 文艺自然🍂'},
+  ];
+  const worn = CATS.map(c => wardrobe.find(i=>i.id==(tryon[c]&&tryon[c].id)));
+  const wornColors = worn.filter(Boolean).map(i=>i.color).filter(Boolean);
+  for (const t of tips) {
+    if (t.match.every(c => wornColors.includes(c))) {
+      return t.tip;
+    }
+  }
+  return wornColors.length >= 2 ? '当前搭配颜色已选中~' : '多选几件试试？';
+};
+
+window.showColorTip = function() {
+  const tip = getColorSuggestion();
+  if (!tip) return;
+  const tipEl = document.getElementById('color-suggestion');
+  if (!tipEl) {
+    const stage = document.querySelector('.stage-wrapper');
+    if (!stage) return;
+    tipEl = document.createElement('div');
+    tipEl.id = 'color-suggestion';
+    tipEl.style.cssText = 'background:rgba(255,255,255,0.9);border-radius:12px;padding:8px 14px;font-size:11px;color:var(--pink-deep);text-align:center;margin-top:8px;box-shadow:0 2px 8px rgba(233,30,140,0.1);border:1px solid rgba(255,107,157,0.15);';
+    stage.appendChild(tipEl);
+  }
+  tipEl.textContent = tip;
+};
+
+// Auto-show tip when tryon changes
+const _updateTryonMini = updateTryonMini;
+window.updateTryonMini = function() {
+  _updateTryonMini();
+  setTimeout(showColorTip, 100);
+};
+
+// Add "what to wear today" suggestion panel
+window.suggestToday = function() {
+  const scene = document.getElementById('scene-select').value;
+  const sceneClothes = {
+    daily: {top:'top', bottom:'bottom', shoes:'shoes'},
+    work: {top:'top', bottom:'bottom', shoes:'shoes'},
+    date: {top:'top', bottom:'bottom', shoes:'shoes', hat:'hat'},
+    party: {top:'top', bottom:'bottom', shoes:'shoes', hat:'hat'},
+    sport: {top:'top', bottom:'bottom', shoes:'shoes'},
+  };
+  const needed = sceneClothes[scene] || sceneClothes.daily;
+  CATS.forEach(c => tryon[c] = null);
+  Object.entries(needed).forEach(([cat, preferred]) => {
+    const items = wardrobe.filter(i => i.cat === cat);
+    if (items.length) tryon[cat] = items[0];
+  });
+  // Dress mode
+  if (Math.random() > 0.5 && wardrobe.filter(i=>i.cat==='dress').length) {
+    tryon.top = null; tryon.bottom = null;
+    tryon.dress = wardrobe.find(i=>i.cat==='dress');
+  }
+  renderTryon(); updateTryonMini(); renderWardrobe();
+  switchTab('tryon');
+  toast('已推荐'+scene+'穿搭✨');
+};
+
+// Scene-based suggestions panel
+window.addSceneSuggestions = function() {
+  const todayBar = document.getElementById('today-bar');
+  if (!todayBar) return;
+  const btn = document.createElement('button');
+  btn.className = 'save-btn';
+  btn.textContent = '🤖 智能推荐';
+  btn.onclick = suggestToday;
+  btn.style.background = 'linear-gradient(135deg,#9c27b0,#7b1fa2)';
+  todayBar.appendChild(btn);
 };
 
 init();
