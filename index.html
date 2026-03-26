@@ -6,85 +6,108 @@
 <title>✨ 奇迹暖暖 · 穿搭乐园</title>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-:root{--pink-light:#ffeef4;--pink:#ff6b9d;--pink-deep:#e91e8c;--pink-dark:#c2185b;--gold:#ffd700;--gold-light:#fff0b3;--bg:#fff5f8;--card:#ffffff;--text:#4a2040;--text-sec:#9c6080;--shadow:rgba(233,30,140,0.15);--radius:20px;--radius-sm:12px;}
-html,body{height:100%;font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;}
-.app{display:flex;flex-direction:column;height:100vh;max-width:480px;margin:0 auto;background:var(--bg);}
-.header{background:linear-gradient(135deg,#ff6b9d 0%,#e91e8c 50%,#c2185b 100%);color:#fff;padding:18px 20px 14px;text-align:center;position:relative;flex-shrink:0;border-radius:0 0 28px 28px;box-shadow:0 4px 20px rgba(233,30,140,0.35);}
+:root{--pink-light:#ffeef4;--pink:#ff6b9d;--pink-deep:#e91e8c;--pink-dark:#c2185b;--gold:#ffd700;--gold-light:#fff0b3;--bg:#fff5f8;--card:#ffffff;--text:#4a2040;--text-sec:#9c6080;--shadow:rgba(233,30,140,0.15);--radius:20px;--radius-sm:12px;--gradient:linear-gradient(135deg,#ff6b9d 0%,#e91e8c 50%,#c2185b 100%);}
+html,body{height:100%;font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;-webkit-tap-highlight-color:transparent;}
+.app{display:flex;flex-direction:column;height:100vh;max-width:480px;margin:0 auto;background:var(--bg);position:relative;overflow:hidden;}
+.sparkle-container{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;max-width:480px;margin:0 auto;}
+.sparkle{position:absolute;width:4px;height:4px;background:var(--gold);border-radius:50%;animation:sparkle-fly 3s ease-in-out infinite;opacity:0;}
+.sparkle::before{content:'✦';position:absolute;font-size:8px;color:var(--gold-light);top:-2px;left:-2px;}
+@keyframes sparkle-fly{0%{opacity:0;transform:translateY(0) scale(0);}20%{opacity:1;transform:translateY(-20px) scale(1);}80%{opacity:1;transform:translateY(-60px) scale(1);}100%{opacity:0;transform:translateY(-80px) scale(0);}}
+.header{background:var(--gradient);color:#fff;padding:18px 20px 14px;text-align:center;position:relative;flex-shrink:0;border-radius:0 0 28px 28px;box-shadow:0 4px 20px rgba(233,30,140,0.35);z-index:10;}
 .header::after{content:'✦ ✦ ✦';display:block;font-size:8px;letter-spacing:4px;color:rgba(255,255,255,0.5);margin-top:4px;}
 .header h1{font-size:20px;font-weight:700;letter-spacing:2px;text-shadow:0 1px 4px rgba(0,0,0,0.15);}
 .header .subtitle{font-size:11px;opacity:0.85;margin-top:2px;letter-spacing:1px;}
-.page-content{flex:1;overflow-y:auto;padding:16px 14px 110px;-webkit-overflow-scrolling:touch;}
+.today-bar{background:rgba(255,255,255,0.95);border-radius:16px;padding:8px 14px;margin:10px 14px 0;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text-sec);box-shadow:0 2px 8px rgba(233,30,140,0.1);border:1px solid rgba(255,107,157,0.1);}
+.today-bar select{padding:4px 8px;border:1.5px solid var(--pink-light);border-radius:10px;font-size:11px;background:#fff;color:var(--text);outline:none;}
+.today-bar .save-btn{background:var(--gradient);color:#fff;border:none;padding:4px 10px;border-radius:10px;font-size:10px;font-weight:600;cursor:pointer;margin-left:auto;}
+.weather-strip{display:flex;gap:8px;padding:8px 14px;background:rgba(255,255,255,0.9);border-bottom:1px solid rgba(255,107,157,0.1);overflow-x:auto;scrollbar-width:none;}
+.weather-strip::-webkit-scrollbar{display:none;}
+.weather-chip{padding:4px 10px;background:var(--pink-light);border-radius:12px;font-size:10px;color:var(--text-sec);white-space:nowrap;cursor:pointer;border:1.5px solid transparent;transition:all 0.2s;}
+.weather-chip.active{background:var(--pink);color:#fff;border-color:var(--pink-deep);}
+.page-content{flex:1;overflow-y:auto;padding:12px 14px 110px;-webkit-overflow-scrolling:touch;}
 .page-content::-webkit-scrollbar{width:0;}
 .page{display:none;}
 .page.active{display:block;animation:slideUp 0.3s ease;}
-@keyframes slideUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
 .tab-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#fff;display:flex;justify-content:space-around;padding:8px 0 max(8px,env(safe-area-inset-bottom));border-radius:24px 24px 0 0;box-shadow:0 -4px 20px rgba(233,30,140,0.12);z-index:100;}
-.tab-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 12px;border-radius:16px;transition:all 0.2s;opacity:0.5;flex:1;}
+.tab-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 12px;border-radius:16px;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);opacity:0.5;flex:1;}
 .tab-item.active{opacity:1;}
-.tab-item.active .tab-icon{background:linear-gradient(135deg,#ff6b9d,#e91e8c);color:#fff;transform:scale(1.15) translateY(-2px);box-shadow:0 4px 12px rgba(233,30,140,0.4);}
-.tab-icon{width:42px;height:42px;background:var(--pink-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;transition:all 0.25s cubic-bezier(0.34,1.56,0.64,1);}
+.tab-item.active .tab-icon{background:var(--gradient);color:#fff;transform:scale(1.18) translateY(-3px);box-shadow:0 6px 16px rgba(233,30,140,0.45);}
+.tab-icon{width:44px;height:44px;background:var(--pink-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;transition:all 0.25s cubic-bezier(0.34,1.56,0.64,1);}
 .tab-label{font-size:10px;font-weight:600;color:var(--pink-deep);letter-spacing:0.5px;}
 .card{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:14px;box-shadow:0 4px 16px var(--shadow);border:1.5px solid rgba(255,107,157,0.12);}
 .card-title{font-size:13px;font-weight:700;color:var(--pink-deep);margin-bottom:12px;display:flex;align-items:center;gap:6px;letter-spacing:0.5px;}
 .card-title::before{content:'◆';font-size:8px;}
 .category-tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
 .cat-tab{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:2px solid var(--pink);color:var(--pink);background:transparent;transition:all 0.2s;}
-.cat-tab.active{background:linear-gradient(135deg,#ff6b9d,#e91e8c);color:#fff;border-color:transparent;}
+.cat-tab.active{background:var(--gradient);color:#fff;border-color:transparent;}
 .clothes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
-.clothes-item{aspect-ratio:1;background:linear-gradient(145deg,#fff5f8,#ffe0ec);border-radius:var(--radius-sm);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;border:2px solid transparent;transition:all 0.2s;position:relative;overflow:hidden;padding:6px;}
+.clothes-item{aspect-ratio:1;background:linear-gradient(145deg,#fff5f8,#ffe0ec);border-radius:var(--radius-sm);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;border:2px solid transparent;transition:all 0.25s cubic-bezier(0.34,1.56,0.64,1);position:relative;overflow:hidden;padding:6px;animation:cardIn 0.3s ease backwards;}
+.clothes-item:hover{transform:scale(1.05) translateY(-2px);box-shadow:0 8px 20px rgba(233,30,140,0.25);}
 .clothes-item:active{transform:scale(0.95);}
 .clothes-item.selected{border-color:var(--pink-deep);background:linear-gradient(145deg,#ffd6e8,#ffb3d1);box-shadow:0 4px 12px rgba(233,30,140,0.3);}
-.clothes-item .item-img{width:52px;height:52px;border-radius:8px;object-fit:cover;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,0.08);}
+@keyframes cardIn{from{opacity:0;transform:scale(0.8) translateY(10px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.clothes-item .item-img{width:52px;height:52px;border-radius:8px;object-fit:cover;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,0.08);transition:transform 0.2s;}
+.clothes-item:hover .item-img{transform:scale(1.08);}
 .clothes-item .item-name{font-size:9px;color:var(--text-sec);margin-top:4px;text-align:center;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .clothes-item .delete-btn{position:absolute;top:2px;right:2px;width:18px;height:18px;background:var(--pink-dark);color:#fff;border-radius:50%;font-size:10px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;cursor:pointer;line-height:1;}
 .clothes-item:hover .delete-btn{opacity:1;}
-.upload-area{border:2px dashed var(--pink);border-radius:var(--radius);padding:24px;text-align:center;cursor:pointer;transition:all 0.2s;background:linear-gradient(145deg,#fff0f6,#ffe0ef);margin-bottom:14px;}
-.upload-area:hover{border-color:var(--pink-deep);background:linear-gradient(145deg,#ffe0ec,#ffd6e8);}
+.upload-area{border:2px dashed var(--pink);border-radius:var(--radius);padding:24px;text-align:center;cursor:pointer;transition:all 0.25s;background:linear-gradient(145deg,#fff0f6,#ffe0ef);margin-bottom:14px;animation:cardIn 0.3s ease;}
+.upload-area:hover{border-color:var(--pink-deep);background:linear-gradient(145deg,#ffe0ec,#ffd6e8);transform:scale(1.01);}
+.upload-area:active{transform:scale(0.98);}
 .upload-icon{font-size:32px;margin-bottom:8px;}
 .upload-area p{font-size:12px;color:var(--text-sec);}
 .upload-area small{font-size:10px;color:#c07090;}
 .empty-hint{text-align:center;padding:32px 0;color:var(--text-sec);font-size:12px;}
-.text-pink{color:var(--pink-deep);}.text-sm{font-size:11px;}.mt-8{margin-top:8px;}.mb-8{margin-bottom:8px;}
-.stage-wrapper{display:flex;flex-direction:column;align-items:center;gap:16px;}
+.stage-wrapper{display:flex;flex-direction:column;align-items:center;gap:14px;}
 .character-stage{position:relative;width:220px;height:360px;background:linear-gradient(180deg,#ffd6ea 0%,#ffb3d1 40%,#fff0f6 100%);border-radius:32px;overflow:hidden;box-shadow:0 8px 32px rgba(233,30,140,0.25),inset 0 0 40px rgba(255,255,255,0.5);border:3px solid rgba(255,255,255,0.6);}
-.character-stage::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 80%,rgba(255,255,255,0.4) 0%,transparent 70%);}
-.q-figure{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);width:120px;height:300px;display:flex;flex-direction:column;align-items:center;z-index:1;}
+.character-stage::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 80%,rgba(255,255,255,0.4) 0%,transparent 70%);pointer-events:none;z-index:1;}
+.stage-sparkle{position:absolute;width:6px;height:6px;background:var(--gold);border-radius:50%;z-index:20;pointer-events:none;animation:stage-sparkle 2s ease-in-out infinite;}
+@keyframes stage-sparkle{0%,100%{opacity:0;transform:scale(0);}50%{opacity:1;transform:scale(1);}}
+.q-figure{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);width:120px;height:300px;display:flex;flex-direction:column;align-items:center;z-index:2;animation:breathing 3.5s ease-in-out infinite;}
+@keyframes breathing{0%,100%{transform:translateX(-50%) scaleY(1);}50%{transform:translateX(-50%) scaleY(1.015);}}
 .q-head{width:56px;height:56px;background:radial-gradient(circle at 35% 35%,#ffe0d0,#f5c0a8);border-radius:50%;position:relative;z-index:2;box-shadow:0 4px 8px rgba(0,0,0,0.1);}
 .q-head::before{content:'';position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:64px;height:34px;background:linear-gradient(180deg,#4a2040,#3a1830);border-radius:50% 50% 0 0;z-index:-1;}
 .q-face{position:absolute;top:18px;left:50%;transform:translateX(-50%);width:36px;height:18px;}
-.q-eye{position:absolute;width:8px;height:10px;background:#3a1a30;border-radius:50%;top:0;}
+.q-eye{position:absolute;width:8px;height:10px;background:#3a1a30;border-radius:50%;top:0;animation:blink 4s ease-in-out infinite;}
 .q-eye.left{left:4px;}.q-eye.right{right:4px;}
+@keyframes blink{0%,45%,55%,100%{transform:scaleY(1);}50%{transform:scaleY(0.1);}}
 .q-eye::after{content:'';position:absolute;width:3px;height:3px;background:#fff;border-radius:50%;top:2px;right:1px;}
-.q-blush{position:absolute;width:10px;height:6px;background:rgba(255,100,130,0.4);border-radius:50%;top:14px;}
+.q-blush{position:absolute;width:10px;height:6px;background:rgba(255,100,130,0.4);border-radius:50%;top:14px;animation:blush 3s ease-in-out infinite;}
+@keyframes blush{0%,100%{opacity:0.4;}50%{opacity:0.7;}}
 .q-blush.left{left:0;}.q-blush.right{right:0;}
 .q-mouth{position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:8px;height:4px;border:2px solid #c07080;border-top:none;border-radius:0 0 8px 8px;}
 .q-neck{width:20px;height:12px;background:#f5c0a8;}
 .q-body{width:64px;height:90px;background:radial-gradient(circle at 50% 30%,#ffd0e0,#ffb3cc);border-radius:12px 12px 8px 8px;position:relative;margin-top:-2px;}
 .q-arm{position:absolute;width:18px;height:60px;background:radial-gradient(circle at 50% 30%,#ffd0e0,#f0b8cc);border-radius:10px;top:4px;}
-.q-arm.left{left:-14px;transform:rotate(6deg);}.q-arm.right{right:-14px;transform:rotate(-6deg);}
-.q-skirt{width:70px;height:60px;background:linear-gradient(180deg,#ff85b8,#e91e8c);clip-path:polygon(15% 0%,85% 0%,100% 100%,0% 100%);margin-top:-4px;}
+.q-arm.left{left:-14px;transform:rotate(6deg);animation:arm-sway 3.5s ease-in-out infinite alternate;}.q-arm.right{right:-14px;transform:rotate(-6deg);animation:arm-sway 3.5s ease-in-out infinite alternate-reverse;}
+@keyframes arm-sway{0%{transform:rotate(6deg);}100%{transform:rotate(10deg);}}
+.q-skirt{width:70px;height:60px;background:linear-gradient(180deg,#ff85b8,#e91e8c);clip-path:polygon(15% 0%,85% 0%,100% 100%,0% 100%);margin-top:-4px;animation:skirt-sway 3s ease-in-out infinite alternate;}
+@keyframes skirt-sway{0%{clip-path:polygon(15% 0%,85% 0%,100% 100%,0% 100%);}100%{clip-path:polygon(13% 0%,87% 0%,98% 100%,2% 100%);}}
 .q-legs{display:flex;gap:6px;justify-content:center;margin-top:-2px;}
 .q-leg{width:22px;height:80px;background:linear-gradient(180deg,#f0c0a8,#e8a888);border-radius:6px 6px 10px 10px;}
 .q-socks{position:absolute;bottom:0;left:50%;transform:translateX(-50%);display:flex;gap:6px;}
 .q-shoe{width:26px;height:18px;background:#e91e8c;border-radius:8px 8px 10px 10px;box-shadow:0 2px 4px rgba(0,0,0,0.15);}
-.clothing-layer{position:absolute;display:flex;justify-content:center;align-items:center;pointer-events:none;z-index:5;}
-.clothing-layer img{object-fit:contain;border-radius:4px;}
+.clothing-layer{position:absolute;display:flex;justify-content:center;align-items:center;pointer-events:none;z-index:5;transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);}
+.clothing-layer img{object-fit:contain;border-radius:4px;animation:clothing-float 3s ease-in-out infinite;}
+@keyframes clothing-float{0%,100%{transform:translateY(0);}50%{transform:translateY(-3px);}}
 .layer-hat{top:0;left:50%;transform:translateX(-50%);width:70px;height:50px;z-index:10;}
 .layer-top{top:68px;left:50%;transform:translateX(-50%);width:90px;height:80px;z-index:6;}
 .layer-dress{top:68px;left:50%;transform:translateX(-50%);width:90px;height:140px;z-index:6;}
 .layer-bottom{top:148px;left:50%;transform:translateX(-50%);width:75px;height:100px;z-index:7;}
 .layer-shoes{bottom:8px;left:50%;transform:translateX(-50%);width:75px;height:30px;z-index:8;}
 .tryon-controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
-.ctrl-btn{padding:10px 18px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:none;transition:all 0.2s;letter-spacing:0.5px;}
-.ctrl-btn.primary{background:linear-gradient(135deg,#ff6b9d,#e91e8c);color:#fff;box-shadow:0 4px 12px rgba(233,30,140,0.3);}
-.ctrl-btn.primary:active{transform:scale(0.96);}
+.ctrl-btn{padding:10px 18px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:none;transition:all 0.2s cubic-bezier(0.34,1.56,0.64,1);letter-spacing:0.5px;}
+.ctrl-btn.primary{background:var(--gradient);color:#fff;box-shadow:0 4px 12px rgba(233,30,140,0.3);}
+.ctrl-btn.primary:active{transform:scale(0.94);}
 .ctrl-btn.secondary{background:var(--card);color:var(--pink-deep);border:2px solid var(--pink);}
+.ctrl-btn.secondary:active{transform:scale(0.96);background:var(--pink-light);}
 .wardrobe-mini{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px;}
-.wardrobe-mini-item{width:44px;height:44px;border-radius:10px;overflow:hidden;border:2px solid transparent;cursor:pointer;transition:all 0.2s;background:var(--pink-light);display:flex;align-items:center;justify-content:center;}
-.wardrobe-mini-item.selected{border-color:var(--pink-deep);transform:scale(1.1);}
+.wardrobe-mini-item{width:44px;height:44px;border-radius:10px;overflow:hidden;border:2px solid transparent;cursor:pointer;transition:all 0.2s;background:var(--pink-light);display:flex;align-items:center;justify-content:center;animation:cardIn 0.3s ease backwards;}
+.wardrobe-mini-item.selected{border-color:var(--pink-deep);transform:scale(1.12);box-shadow:0 4px 12px rgba(233,30,140,0.3);}
 .wardrobe-mini-item img{width:100%;height:100%;object-fit:cover;}
-.outfit-card{background:linear-gradient(145deg,#fff,#fff0f6);border-radius:var(--radius);padding:14px;margin-bottom:12px;border:2px solid rgba(255,107,157,0.15);box-shadow:0 4px 16px var(--shadow);display:flex;gap:12px;align-items:center;cursor:pointer;transition:all 0.2s;}
-.outfit-card:active{transform:scale(0.98);}
+.outfit-card{background:linear-gradient(145deg,#fff,#fff0f6);border-radius:var(--radius);padding:14px;margin-bottom:12px;border:2px solid rgba(255,107,157,0.15);box-shadow:0 4px 16px var(--shadow);display:flex;gap:12px;align-items:center;cursor:pointer;transition:all 0.25s cubic-bezier(0.34,1.56,0.64,1);animation:cardIn 0.3s ease backwards;}
+.outfit-card:hover{transform:translateY(-3px) scale(1.01);box-shadow:0 8px 24px rgba(233,30,140,0.2);}
 .outfit-card.selected{border-color:var(--pink-deep);box-shadow:0 4px 20px rgba(233,30,140,0.3);}
 .outfit-thumb{width:60px;height:60px;background:linear-gradient(135deg,#ffd6ea,#ffb3d1);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;flex-wrap:wrap;gap:2px;padding:4px;overflow:hidden;}
 .outfit-thumb img{width:26px;height:26px;object-fit:cover;border-radius:4px;}
@@ -96,15 +119,17 @@ html,body{height:100%;font-family:'PingFang SC','Hiragino Sans GB','Microsoft Ya
 .outfit-action-btn{width:30px;height:30px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all 0.2s;}
 .outfit-action-btn.delete{background:#ffe0e0;color:#e53935;}
 .outfit-action-btn.wear{background:var(--pink-light);color:var(--pink-deep);}
-.new-outfit-card{border:2px dashed var(--pink);border-radius:var(--radius);padding:20px;text-align:center;cursor:pointer;transition:all 0.2s;background:linear-gradient(145deg,#fff0f6,#ffe0ef);margin-bottom:14px;}
-.new-outfit-card:active{transform:scale(0.98);background:#ffd6e8;}
+.outfit-action-btn.wear:hover{background:var(--pink);color:#fff;}
+.new-outfit-card{border:2px dashed var(--pink);border-radius:var(--radius);padding:20px;text-align:center;cursor:pointer;transition:all 0.2s;background:linear-gradient(145deg,#fff0f6,#ffe0ef);margin-bottom:14px;animation:cardIn 0.3s ease;}
+.new-outfit-card:hover{transform:scale(1.01);background:#ffd6e8;}
+.new-outfit-card:active{transform:scale(0.98);}
 .new-outfit-card p{font-size:13px;color:var(--pink-deep);font-weight:600;}
 .new-outfit-card span{font-size:11px;color:var(--text-sec);}
 .stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;}
 .stat-card{background:linear-gradient(145deg,#fff,#fff5f8);border-radius:var(--radius-sm);padding:14px;text-align:center;border:1.5px solid rgba(255,107,157,0.15);box-shadow:0 2px 8px var(--shadow);}
-.stat-num{font-size:28px;font-weight:800;background:linear-gradient(135deg,#ff6b9d,#e91e8c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
+.stat-num{font-size:28px;font-weight:800;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
 .stat-label{font-size:11px;color:var(--text-sec);margin-top:4px;}
-.stat-card.total{grid-column:span 2;background:linear-gradient(135deg,#ff6b9d,#e91e8c);}
+.stat-card.total{grid-column:span 2;background:var(--gradient);}
 .stat-card.total .stat-num{color:#fff;-webkit-text-fill-color:#fff;background:none;}
 .stat-card.total .stat-label{color:rgba(255,255,255,0.85);}
 .achievement-card{display:flex;gap:10px;align-items:center;padding:12px;background:linear-gradient(145deg,#fff,#fff5f8);border-radius:var(--radius-sm);margin-bottom:8px;border:1.5px solid rgba(255,107,157,0.12);}
@@ -114,13 +139,14 @@ html,body{height:100%;font-family:'PingFang SC','Hiragino Sans GB','Microsoft Ya
 .achievement-badge{padding:4px 10px;border-radius:12px;font-size:10px;font-weight:700;}
 .achievement-badge.done{background:#e8f5e9;color:#2e7d32;}
 .achievement-badge.locked{background:#f5f5f5;color:#9e9e9e;}
-.tip-bar{background:linear-gradient(90deg,#ff6b9d,#e91e8c);color:#fff;text-align:center;padding:8px 16px;font-size:11px;border-radius:20px;margin-bottom:14px;letter-spacing:0.5px;}
-.hidden{display:none!important;}
-@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
-.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--pink-deep);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:300;box-shadow:0 4px 16px rgba(233,30,140,0.4);animation:slideDown 0.3s ease;}
-@keyframes slideDown{from{opacity:0;transform:translateX(-50%) translateY(-20px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;}
-.modal{background:#fff;border-radius:var(--radius);padding:20px;width:100%;max-width:340px;max-height:80vh;overflow-y:auto;position:relative;}
+.tip-bar{background:var(--gradient);color:#fff;text-align:center;padding:8px 16px;font-size:11px;border-radius:20px;margin-bottom:14px;letter-spacing:0.5px;}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--pink-deep);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:300;box-shadow:0 4px 16px rgba(233,30,140,0.4);animation:toastIn 0.3s ease,toastOut 0.3s ease 1.7s forwards;}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(-20px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
+@keyframes toastOut{to{opacity:0;transform:translateX(-50%) translateY(-10px);}}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn 0.2s ease;}
+.modal{background:#fff;border-radius:var(--radius);padding:20px;width:100%;max-width:340px;max-height:80vh;overflow-y:auto;position:relative;animation:modalIn 0.25s cubic-bezier(0.34,1.56,0.64,1);}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+@keyframes modalIn{from{opacity:0;transform:scale(0.9) translateY(10px);}to{opacity:1;transform:scale(1) translateY(0);}}
 .modal h3{font-size:15px;color:var(--pink-deep);margin-bottom:14px;text-align:center;}
 .modal-close{position:absolute;top:10px;right:14px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-sec);}
 .modal-actions{display:flex;gap:10px;margin-top:14px;}
@@ -129,26 +155,38 @@ html,body{height:100%;font-family:'PingFang SC','Hiragino Sans GB','Microsoft Ya
 .outfit-selector h4{font-size:12px;color:var(--pink-deep);margin-bottom:10px;}
 .outfit-selector-items{display:flex;gap:8px;flex-wrap:wrap;}
 .outfit-selector-item{width:50px;height:50px;border-radius:10px;border:2px solid transparent;cursor:pointer;overflow:hidden;transition:all 0.2s;background:var(--pink-light);display:flex;align-items:center;justify-content:center;}
-.outfit-selector-item.selected{border-color:var(--pink-deep);}
+.outfit-selector-item.selected{border-color:var(--pink-deep);transform:scale(1.1);}
 .outfit-selector-item img{width:100%;height:100%;object-fit:cover;}
 .selector-category{margin-bottom:12px;}
 .selector-category h5{font-size:11px;color:var(--text-sec);margin-bottom:6px;}
+.hidden{display:none!important;}
+@keyframes achievementUnlock{0%{transform:scale(0.5) rotate(-10deg);opacity:0;}50%{transform:scale(1.2) rotate(5deg);}100%{transform:scale(1) rotate(0);opacity:1;}}
+.achievement-unlock{animation:achievementUnlock 0.6s cubic-bezier(0.34,1.56,0.64,1);}
+@media (min-width:500px){.page-content::-webkit-scrollbar{width:4px;}.page-content::-webkit-scrollbar-thumb{background:var(--pink-light);border-radius:2px;}}
 </style>
 </head>
 <body>
 <div class="app">
-  <div class="header">
-    <h1>✨ 奇迹暖暖</h1>
-    <div class="subtitle">专属穿搭乐园</div>
+  <div class="sparkle-container" id="sparkles"></div>
+  <div class="header"><h1>✨ 奇迹暖暖</h1><div class="subtitle">专属穿搭乐园</div></div>
+  <div class="today-bar">
+    <span>📅</span><span id="today-date"></span>
+    <select id="scene-select">
+      <option value="daily">日常</option><option value="work">上班</option><option value="date">约会</option><option value="party">聚会</option><option value="sport">运动</option>
+    </select>
+    <button class="save-btn" onclick="saveTodayOutfit()">💾 保存</button>
   </div>
-
+  <div class="weather-strip">
+    <span class="weather-chip active" data-w="any" onclick="setWeather('any',this)">🌈 全部</span>
+    <span class="weather-chip" data-w="sunny" onclick="setWeather('sunny',this)">☀️ 晴天</span>
+    <span class="weather-chip" data-w="rainy" onclick="setWeather('rainy',this)">🌧️ 雨天</span>
+    <span class="weather-chip" data-w="cold" onclick="setWeather('cold',this)">❄️ 寒冷</span>
+    <span class="weather-chip" data-w="hot" onclick="setWeather('hot',this)">🔥 炎热</span>
+  </div>
   <div class="page-content">
-    <!-- 衣橱页 -->
     <div class="page active" id="page-wardrobe">
       <div class="upload-area" onclick="document.getElementById('img-upload').click()">
-        <div class="upload-icon">📸</div>
-        <p>点击上传衣物图片</p>
-        <small>支持多选，可一次上传多件衣物</small>
+        <div class="upload-icon">📸</div><p>点击上传衣物图片</p><small>支持多选，可一次上传多件衣物</small>
       </div>
       <input type="file" id="img-upload" accept="image/*" multiple style="display:none" onchange="handleUpload(this)">
       <div class="category-tabs" id="cat-tabs">
@@ -160,26 +198,13 @@ html,body{height:100%;font-family:'PingFang SC','Hiragino Sans GB','Microsoft Ya
         <button class="cat-tab" data-cat="hat">🎩 配饰</button>
       </div>
       <div class="clothes-grid" id="wardrobe-grid"></div>
-      <div class="empty-hint hidden" id="empty-wardrobe">
-        <p>👗 衣橱空空如也</p>
-        <p class="text-sm text-pink mt-8">快上传第一件心仪的衣物吧~</p>
-      </div>
+      <div class="empty-hint hidden" id="empty-wardrobe"><p>👗 衣橱空空如也</p><p style="font-size:11px;color:var(--pink);margin-top:8px;">快上传第一件心仪的衣物吧~</p></div>
     </div>
-
-    <!-- 试穿页 -->
     <div class="page" id="page-tryon">
       <div class="stage-wrapper">
         <div class="character-stage" id="character-stage">
           <div class="q-figure" id="q-figure">
-            <div class="q-head">
-              <div class="q-face">
-                <div class="q-eye left"></div>
-                <div class="q-eye right"></div>
-                <div class="q-blush left"></div>
-                <div class="q-blush right"></div>
-                <div class="q-mouth"></div>
-              </div>
-            </div>
+            <div class="q-head"><div class="q-face"><div class="q-eye left"></div><div class="q-eye right"></div><div class="q-blush left"></div><div class="q-blush right"></div><div class="q-mouth"></div></div></div>
             <div class="q-neck"></div>
             <div class="q-body"><div class="q-arm left"></div><div class="q-arm right"></div></div>
             <div class="q-skirt" id="q-skirt"></div>
@@ -209,30 +234,18 @@ html,body{height:100%;font-family:'PingFang SC','Hiragino Sans GB','Microsoft Ya
         </div>
       </div>
     </div>
-
-    <!-- 搭配页 -->
     <div class="page" id="page-outfit">
       <div class="tip-bar">💡 点击「试穿」可直接穿上搭配，长按搭配卡片可删除</div>
-      <div class="new-outfit-card" onclick="showNewOutfitModal()">
-        <p>✨ 创建新搭配</p>
-        <span>选择几件心仪的衣服，生成一套完整搭配</span>
-      </div>
-      <div id="outfit-list">
-        <div class="empty-hint" id="empty-outfit">
-          <p>🌸 还没有搭配方案</p>
-          <p class="text-sm text-pink mt-8">去试穿页选好衣服，点击「添加到搭配」吧~</p>
-        </div>
-      </div>
+      <div class="new-outfit-card" onclick="showNewOutfitModal()"><p>✨ 创建新搭配</p><span>选择几件心仪的衣服，生成一套完整搭配</span></div>
+      <div id="outfit-list"><div class="empty-hint" id="empty-outfit"><p>🌸 还没有搭配方案</p><p style="font-size:11px;color:var(--pink);margin-top:8px;">去试穿页选好衣服，点击「添加到搭配」吧~</p></div></div>
     </div>
-
-    <!-- 我的页 -->
     <div class="page" id="page-my">
       <div class="stats-grid">
         <div class="stat-card total"><div class="stat-num" id="stat-total">0</div><div class="stat-label">衣物总数</div></div>
         <div class="stat-card"><div class="stat-num" id="stat-top">0</div><div class="stat-label">👕 上衣</div></div>
         <div class="stat-card"><div class="stat-num" id="stat-bottom">0</div><div class="stat-label">👖 下装</div></div>
         <div class="stat-card"><div class="stat-num" id="stat-dress">0</div><div class="stat-label">👗 连衣裙</div></div>
-        <div class="stat-card"><div class="stat-num" id="stat-shoes">0</div><div class="stat-label">👟 鞋子</div></div>
+        <div class="stat-card"><div class="stat-num" id="stat-shoes">0</div><div class="stat-label">👟鞋子</div></div>
         <div class="stat-card"><div class="stat-num" id="stat-hat">0</div><div class="stat-label">🎩 配饰</div></div>
         <div class="stat-card"><div class="stat-num" id="stat-outfits">0</div><div class="stat-label">💎 搭配数</div></div>
       </div>
@@ -265,8 +278,6 @@ html,body{height:100%;font-family:'PingFang SC','Hiragino Sans GB','Microsoft Ya
       </div>
     </div>
   </div>
-
-  <!-- TAB BAR -->
   <div class="tab-bar">
     <div class="tab-item active" onclick="switchTab('wardrobe')"><div class="tab-icon">👗</div><span class="tab-label">衣橱</span></div>
     <div class="tab-item" onclick="switchTab('tryon')"><div class="tab-icon">✨</div><span class="tab-label">试穿</span></div>
@@ -274,8 +285,6 @@ html,body{height:100%;font-family:'PingFang SC','Hiragino Sans GB','Microsoft Ya
     <div class="tab-item" onclick="switchTab('my')"><div class="tab-icon">💝</div><span class="tab-label">我的</span></div>
   </div>
 </div>
-
-<!-- MODALS -->
 <div class="modal-overlay hidden" id="quick-select-modal">
   <div class="modal">
     <button class="modal-close" onclick="closeQuickSelect()">×</button>
@@ -287,7 +296,6 @@ html,body{height:100%;font-family:'PingFang SC','Hiragino Sans GB','Microsoft Ya
     </div>
   </div>
 </div>
-
 <div class="modal-overlay hidden" id="new-outfit-modal">
   <div class="modal">
     <button class="modal-close" onclick="closeNewOutfitModal()">×</button>
@@ -302,19 +310,18 @@ html,body{height:100%;font-family:'PingFang SC','Hiragino Sans GB','Microsoft Ya
     </div>
   </div>
 </div>
-
 <div class="toast hidden" id="toast"></div>
-
 <script>
 const CAT_NAMES = {top:'上衣',bottom:'下装',dress:'连衣裙',shoes:'鞋子',hat:'配饰'};
 const CATS = ['top','bottom','dress','shoes','hat'];
 let wardrobe = [];
 let outfits = [];
+let todayOutfit = null;
 let tryon = {top:null,bottom:null,dress:null,shoes:null,hat:null};
 let currentCat = 'all';
-let pendingQS = null; // quickSelect category
-let selectedQS = null; // quickSelect selection
-
+let pendingQS = null;
+let selectedQS = null;
+let currentWeather = 'any';
 function init() {
   loadFromStorage();
   renderWardrobe();
@@ -323,6 +330,36 @@ function init() {
   updateTryonMini();
   checkAchievements();
   bindCatTabs();
+  setTodayDate();
+  addSparkles();
+  addStageSparkles();
+}
+function setTodayDate() {
+  const now = new Date();
+  const dateStr = now.getMonth()+1+'月'+now.getDate()+'日 '+['日','一','二','三','四','五','六'][now.getDay()]+'曜日';
+  document.getElementById('today-date').textContent = dateStr;
+}
+function addSparkles() {
+  const c = document.getElementById('sparkles');
+  for (let i = 0; i < 8; i++) {
+    const s = document.createElement('div');
+    s.className = 'sparkle';
+    s.style.left = (Math.random()*100)+'%';
+    s.style.top = (60+Math.random()*30)+'%';
+    s.style.animationDelay = (Math.random()*3)+'s';
+    c.appendChild(s);
+  }
+}
+function addStageSparkles() {
+  const stage = document.getElementById('character-stage');
+  const positions = [{left:'15%',top:'20%'},{right:'15%',top:'30%'},{left:'10%',bottom:'25%'},{right:'10%',bottom:'15%'}];
+  positions.forEach((p,i) => {
+    const s = document.createElement('div');
+    s.className = 'stage-sparkle';
+    Object.assign(s.style, p);
+    s.style.animationDelay = (i*0.5)+'s';
+    stage.appendChild(s);
+  });
 }
 function bindCatTabs() {
   document.querySelectorAll('.cat-tab').forEach(btn => {
@@ -334,22 +371,22 @@ function bindCatTabs() {
     });
   });
 }
-function save() { localStorage.setItem('nnWardrobe',JSON.stringify(wardrobe)); localStorage.setItem('nnOutfits',JSON.stringify(outfits)); }
-function load() {
+function save() { localStorage.setItem('nnWardrobe',JSON.stringify(wardrobe)); localStorage.setItem('nnOutfits',JSON.stringify(outfits)); localStorage.setItem('nnTodayOutfit',JSON.stringify(todayOutfit)); }
+function loadFromStorage() {
   try {
     const w = localStorage.getItem('nnWardrobe');
     const o = localStorage.getItem('nnOutfits');
+    const t = localStorage.getItem('nnTodayOutfit');
     wardrobe = w ? JSON.parse(w) : [];
     outfits = o ? JSON.parse(o) : [];
-  } catch(e) { wardrobe=[]; outfits=[]; }
+    todayOutfit = t ? JSON.parse(t) : null;
+  } catch(e) { wardrobe=[]; outfits=[]; todayOutfit=null; }
 }
 function toast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.remove('hidden');
   setTimeout(() => t.classList.add('hidden'), 2000);
 }
-
-/* ===== TABS ===== */
 function switchTab(tab) {
   const idx = ['wardrobe','tryon','outfit','my'].indexOf(tab);
   document.querySelectorAll('.tab-item').forEach((el,i) => el.classList.toggle('active', i===idx));
@@ -358,25 +395,22 @@ function switchTab(tab) {
   if (tab==='outfit') renderOutfits();
   if (tab==='my') { renderStats(); checkAchievements(); }
 }
-
-/* ===== WARDROBE ===== */
-/* ===== WARDROBE ===== */
 function renderWardrobe() {
   const grid = document.getElementById('wardrobe-grid');
   const empty = document.getElementById('empty-wardrobe');
-  const items = currentCat === 'all' ? wardrobe : wardrobe.filter(i => i.cat === currentCat);
+  let items = currentCat === 'all' ? wardrobe : wardrobe.filter(i => i.cat === currentCat);
+  if (currentWeather !== 'any') {
+    const weatherMap = {sunny:['top','dress'],rainy:['hat','top','bottom'],cold:['top','hat','bottom'],hot:['top','dress','shoes']};
+    const allowed = weatherMap[currentWeather] || CATS;
+    items = items.filter(i => allowed.includes(i.cat));
+  }
   if (!items.length) { grid.innerHTML = ''; empty.classList.remove('hidden'); return; }
   empty.classList.add('hidden');
-  grid.innerHTML = items.map(item => {
+  grid.innerHTML = items.map((item,i) => {
     const sel = Object.values(tryon).some(v => v && v.id === item.id);
-    return `<div class="clothes-item${sel?' selected':''}" onclick="toggleWardrobeItem('${item.id}')">
-      <img class="item-img" src="${item.data}" alt="${item.name}">
-      <div class="item-name">${item.name}</div>
-      <div class="delete-btn" onclick="event.stopPropagation();deleteItem('${item.id}')">×</div>
-    </div>`;
+    return '<div class="clothes-item'+(sel?' selected':'')+'" onclick="toggleWardrobeItem(\''+item.id+'\')" style="animation-delay:'+(i*0.03)+'s"><img class="item-img" src="'+item.data+'" alt="'+item.name+'"><div class="item-name">'+item.name+'</div><div class="delete-btn" onclick="event.stopPropagation();deleteItem(\''+item.id+'\')">×</div></div>';
   }).join('');
 }
-
 function handleUpload(input) {
   if (!input.files) return;
   const cats = prompt('为这些衣物选择分类（输入数字）：\n1=上衣 2=下装 3=连衣裙 4=鞋子 5=配饰\n多个文件请用同一种分类') || '1';
@@ -394,16 +428,12 @@ function handleUpload(input) {
   });
   input.value = '';
 }
-
 function toggleWardrobeItem(id) {
   const item = wardrobe.find(i => i.id == id);
   if (!item) return;
   const cat = item.cat;
-  // Check if in tryon, remove if yes
-  if (tryon[cat] && tryon[cat].id == id) {
-    tryon[cat] = null;
-  } else {
-    // If selecting dress, clear top+bottom; if selecting top/bottom, clear dress
+  if (tryon[cat] && tryon[cat].id == id) { tryon[cat] = null; }
+  else {
     if (cat === 'dress') { tryon.top = null; tryon.bottom = null; }
     else if (cat === 'top' || cat === 'bottom') { tryon.dress = null; }
     tryon[cat] = item;
@@ -412,16 +442,12 @@ function toggleWardrobeItem(id) {
   renderWardrobe();
   updateTryonMini();
 }
-
 function deleteItem(id) {
   wardrobe = wardrobe.filter(i => i.id != id);
-  // Also remove from tryon if there
   CATS.forEach(c => { if (tryon[c] && tryon[c].id == id) tryon[c] = null; });
   save(); renderWardrobe(); renderStats(); updateTryonMini(); renderTryon();
   toast('已删除');
 }
-
-/* ===== TRYON ===== */
 function renderTryon() {
   const hasDress = !!tryon.dress;
   document.getElementById('q-skirt').style.display = hasDress ? 'none' : 'block';
@@ -429,69 +455,39 @@ function renderTryon() {
   document.getElementById('layer-dress').classList.toggle('hidden', !hasDress);
   document.getElementById('layer-top').classList.toggle('hidden', hasDress || !tryon.top);
   document.getElementById('layer-bottom').classList.toggle('hidden', hasDress || !tryon.bottom);
-
   CATS.forEach(cat => {
     const el = document.getElementById('layer-'+cat);
-    if (!el) return;
-    if (cat === 'dress' || cat === 'top' || cat === 'bottom') return; // handled above
-    el.innerHTML = tryon[cat] ? `<img src="${tryon[cat].data}" style="width:100%;height:100%;object-fit:contain;">` : '';
+    if (!el || cat==='dress' || cat==='top' || cat==='bottom') return;
+    el.innerHTML = tryon[cat] ? '<img src="'+tryon[cat].data+'" style="width:100%;height:100%;object-fit:contain;">' : '';
   });
-  if (tryon.top && !hasDress) {
-    document.getElementById('layer-top').innerHTML = `<img src="${tryon.top.data}" style="width:100%;height:100%;object-fit:contain;">`;
-  }
-  if (tryon.bottom && !hasDress) {
-    document.getElementById('layer-bottom').innerHTML = `<img src="${tryon.bottom.data}" style="width:100%;height:100%;object-fit:contain;">`;
-  }
-  if (tryon.dress) {
-    document.getElementById('layer-dress').innerHTML = `<img src="${tryon.dress.data}" style="width:100%;height:100%;object-fit:contain;">`;
-  }
-  if (tryon.shoes) {
-    document.getElementById('layer-shoes').innerHTML = `<img src="${tryon.shoes.data}" style="width:100%;height:100%;object-fit:contain;">`;
-  }
-  if (tryon.hat) {
-    document.getElementById('layer-hat').innerHTML = `<img src="${tryon.hat.data}" style="width:100%;height:100%;object-fit:contain;">`;
-  }
+  if (tryon.top && !hasDress) document.getElementById('layer-top').innerHTML = '<img src="'+tryon.top.data+'" style="width:100%;height:100%;object-fit:contain;">';
+  if (tryon.bottom && !hasDress) document.getElementById('layer-bottom').innerHTML = '<img src="'+tryon.bottom.data+'" style="width:100%;height:100%;object-fit:contain;">';
+  if (tryon.dress) document.getElementById('layer-dress').innerHTML = '<img src="'+tryon.dress.data+'" style="width:100%;height:100%;object-fit:contain;">';
+  if (tryon.shoes) document.getElementById('layer-shoes').innerHTML = '<img src="'+tryon.shoes.data+'" style="width:100%;height:100%;object-fit:contain;">';
+  if (tryon.hat) document.getElementById('layer-hat').innerHTML = '<img src="'+tryon.hat.data+'" style="width:100%;height:100%;object-fit:contain;">';
 }
-
 function clearTryon() { CATS.forEach(c => tryon[c] = null); renderTryon(); updateTryonMini(); toast('已清空试穿'); }
-
 function updateTryonMini() {
   const mini = document.getElementById('tryon-mini');
-  const items = CATS.filter(c => tryon[c]).map(c => {
-    const sel = true;
-    return `<div class="wardrobe-mini-item selected" onclick="removeFromTryon('${c}')"><img src="${tryon[c].data}"></div>`;
-  }).join('');
-  mini.innerHTML = items;
+  mini.innerHTML = CATS.filter(c => tryon[c]).map(c => '<div class="wardrobe-mini-item selected" onclick="removeFromTryon(\''+c+'\')"><img src="'+tryon[c].data+'"></div>').join('');
 }
-
 function removeFromTryon(cat) { tryon[cat] = null; renderTryon(); updateTryonMini(); renderWardrobe(); }
-
-/* ===== QUICK SELECT ===== */
 function quickSelect(cat) {
   pendingQS = cat;
   selectedQS = tryon[cat] ? tryon[cat].id : null;
   document.getElementById('qs-cat-title').textContent = CAT_NAMES[cat];
   const content = document.getElementById('quick-select-content');
   const items = wardrobe.filter(i => i.cat === cat);
-  if (!items.length) { content.innerHTML = '<p class="text-sm text-pink">该分类暂无衣物，请先上传~</p>'; }
-  else {
-    content.innerHTML = `<div class="outfit-selector-items">${items.map(i => `<div class="outfit-selector-item${selectedQS==i.id?' selected':''}" onclick="selectQS('${i.id}')"><img src="${i.data}"></div>`).join('')}</div>`;
-  }
+  if (!items.length) { content.innerHTML = '<p style="font-size:11px;color:var(--pink);">该分类暂无衣物，请先上传~</p>'; }
+  else { content.innerHTML = '<div class="outfit-selector-items">'+items.map(i => '<div class="outfit-selector-item'+(selectedQS==i.id?' selected':'')+'" onclick="selectQS(\''+i.id+'\')"><img src="'+i.data+'"></div>').join('')+'</div>'; }
   document.getElementById('quick-select-modal').classList.remove('hidden');
 }
-
 function selectQS(id) {
   const item = wardrobe.find(i => i.id == id);
   if (!item) return;
-  if (selectedQS == id) { selectedQS = null; }
-  else { selectedQS = id; }
-  document.querySelectorAll('.outfit-selector-item').forEach(el => {
-    el.classList.toggle('selected', el.querySelector('img').src === item.data && selectedQS == id);
-  });
-  // Re-render to update selection
+  selectedQS = selectedQS == id ? null : id;
   quickSelect(pendingQS);
 }
-
 function confirmQuickSelect() {
   if (selectedQS) {
     const item = wardrobe.find(i => i.id == selectedQS);
@@ -504,10 +500,7 @@ function confirmQuickSelect() {
   closeQuickSelect();
   renderTryon(); updateTryonMini(); renderWardrobe();
 }
-
 function closeQuickSelect() { document.getElementById('quick-select-modal').classList.add('hidden'); pendingQS=null; selectedQS=null; }
-
-/* ===== OUTFIT SELECTOR (tryon page) ===== */
 function showOutfitSelector() {
   const hasClothes = Object.values(tryon).some(v => v);
   if (!hasClothes) { toast('请先在试穿区选择衣物~'); return; }
@@ -518,68 +511,42 @@ function showOutfitSelector() {
   save(); renderOutfits(); renderStats(); checkAchievements();
   toast('搭配「'+name+'」已保存！');
 }
-
-/* ===== OUTFITS PAGE ===== */
 function renderOutfits() {
   const list = document.getElementById('outfit-list');
   const empty = document.getElementById('empty-outfit');
   if (!outfits.length) { list.innerHTML = ''; empty.classList.remove('hidden'); return; }
   empty.classList.add('hidden');
-  list.innerHTML = outfits.map(o => {
-    const thumbs = o.items.slice(0,4).map(i => `<img src="${i.data}">`).join('');
-    const tags = o.items.map(i => `<span class="outfit-tag">${CAT_NAMES[i.cat]}</span>`).join('');
-    return `<div class="outfit-card" id="outfit-${o.id}">
-      <div class="outfit-thumb">${thumbs}</div>
-      <div class="outfit-info">
-        <div class="outfit-name">${o.name}</div>
-        <div class="outfit-items">${tags}</div>
-      </div>
-      <div class="outfit-actions">
-        <button class="outfit-action-btn wear" onclick="wearOutfit('${o.id}')" title="试穿">✨</button>
-        <button class="outfit-action-btn delete" onclick="deleteOutfit('${o.id}')" title="删除">×</button>
-      </div>
-    </div>`;
+  list.innerHTML = outfits.map((o,i) => {
+    const thumbs = o.items.slice(0,4).map(i => '<img src="'+i.data+'">').join('');
+    const tags = o.items.map(i => '<span class="outfit-tag">'+CAT_NAMES[i.cat]+'</span>').join('');
+    return '<div class="outfit-card" id="outfit-'+o.id+'" style="animation-delay:'+(i*0.05)+'s"><div class="outfit-thumb">'+thumbs+'</div><div class="outfit-info"><div class="outfit-name">'+o.name+'</div><div class="outfit-items">'+tags+'</div></div><div class="outfit-actions"><button class="outfit-action-btn wear" onclick="wearOutfit(\''+o.id+'\')" title="试穿">✨</button><button class="outfit-action-btn delete" onclick="deleteOutfit(\''+o.id+'\')" title="删除">×</button></div></div>';
   }).join('');
 }
-
 function wearOutfit(id) {
   const o = outfits.find(x => x.id == id);
   if (!o) return;
   CATS.forEach(c => tryon[c] = null);
-  o.items.forEach(i => {
-    const item = wardrobe.find(w => w.id == i.itemId);
-    if (item) tryon[i.cat] = item;
-  });
+  o.items.forEach(i => { const item = wardrobe.find(w => w.id == i.itemId); if (item) tryon[i.cat] = item; });
   renderTryon(); updateTryonMini(); renderWardrobe();
   switchTab('tryon');
   toast('已穿上「'+o.name+'」~');
 }
-
 function deleteOutfit(id) {
   if (!confirm('确定删除这个搭配？')) return;
   outfits = outfits.filter(o => o.id != id);
   save(); renderOutfits(); renderStats();
   toast('搭配已删除');
 }
-
 function showNewOutfitModal() {
   document.getElementById('outfit-name-input').value = '';
   const sel = document.getElementById('new-outfit-selectors');
   sel.innerHTML = CATS.map(cat => {
     const items = wardrobe.filter(i => i.cat === cat);
-    return `<div class="selector-category">
-      <h5>${CAT_NAMES[cat]} ${items.length?'（'+items.length+'件）':'（暂无可选）'}</h5>
-      <div class="outfit-selector-items">${
-        items.length ? items.map(i => `<div class="outfit-selector-item" data-cat="${cat}" data-id="${i.id}" onclick="this.classList.toggle('selected')"><img src="${i.data}"></div>`).join('')
-        : '<span class="text-sm" style="color:var(--text-sec)">无</span>'
-      }</div>
-    </div>`;
+    return '<div class="selector-category"><h5>'+CAT_NAMES[cat]+' '+(items.length?'（'+items.length+'件）':'（暂无可选）')+'</h5><div class="outfit-selector-items">'+(items.length ? items.map(i => '<div class="outfit-selector-item" data-cat="'+cat+'" data-id="'+i.id+'" onclick="this.classList.toggle(\'selected\')"><img src="'+i.data+'"></div>').join('') : '<span style="font-size:11px;color:var(--text-sec)">无</span>')+'</div></div>';
   }).join('');
   document.getElementById('new-outfit-modal').classList.remove('hidden');
 }
-
 function closeNewOutfitModal() { document.getElementById('new-outfit-modal').classList.add('hidden'); }
-
 function saveNewOutfit() {
   const name = document.getElementById('outfit-name-input').value.trim() || ('搭配'+(outfits.length+1));
   const selected = [];
@@ -595,8 +562,20 @@ function saveNewOutfit() {
   closeNewOutfitModal();
   toast('搭配「'+name+'」已创建！');
 }
-
-/* ===== STATS ===== */
+function saveTodayOutfit() {
+  const scene = document.getElementById('scene-select').value;
+  const items = CATS.filter(c => tryon[c]).map(c => ({cat:c, itemId: tryon[c].id, data: tryon[c].data, name: tryon[c].name}));
+  if (!items.length) { toast('请先在试穿区选择衣物~'); return; }
+  todayOutfit = { date: new Date().toDateString(), scene, items };
+  save();
+  toast('今日穿搭已保存！📸');
+}
+function setWeather(w, el) {
+  currentWeather = w;
+  document.querySelectorAll('.weather-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderWardrobe();
+}
 function renderStats() {
   const counts = {total: wardrobe.length, top:0, bottom:0, dress:0, shoes:0, hat:0, outfits: outfits.length};
   wardrobe.forEach(i => { if (counts[i.cat] !== undefined) counts[i.cat]++; });
@@ -604,28 +583,22 @@ function renderStats() {
   CATS.forEach(c => { const el = document.getElementById('stat-'+c); if(el) el.textContent = counts[c]; });
   const so = document.getElementById('stat-outfits'); if(so) so.textContent = counts.outfits;
 }
-
 function checkAchievements() {
   const a1 = document.getElementById('ach-1');
   const a2 = document.getElementById('ach-2');
   const a3 = document.getElementById('ach-3');
-  if (wardrobe.length >= 1) { a1.className='achievement-badge done'; a1.textContent='已解锁'; }
-  if (wardrobe.length >= 10) { a2.className='achievement-badge done'; a2.textContent='已解锁'; }
-  if (outfits.length >= 5) { a3.className='achievement-badge done'; a3.textContent='已解锁'; }
+  if (wardrobe.length >= 1 && a1.className.includes('locked')) { a1.className='achievement-badge done achievement-unlock'; a1.textContent='已解锁'; toast('🏆 成就解锁：初出茅庐！'); }
+  if (wardrobe.length >= 10 && a2.className.includes('locked')) { a2.className='achievement-badge done achievement-unlock'; a2.textContent='已解锁'; toast('🏆 成就解锁：小小衣橱！'); }
+  if (outfits.length >= 5 && a3.className.includes('locked')) { a3.className='achievement-badge done achievement-unlock'; a3.textContent='已解锁'; toast('🏆 成就解锁：搭配达人！'); }
 }
-
-/* ===== DATA MANAGEMENT ===== */
 function exportData() {
-  const data = JSON.stringify({wardrobe, outfits}, null, 2);
+  const data = JSON.stringify({wardrobe, outfits, todayOutfit}, null, 2);
   const blob = new Blob([data], {type:'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a'); a.href=url; a.download='nn-data.json'; a.click();
   URL.revokeObjectURL(url);
   toast('数据已导出');
 }
-
-function importData() { document.getElementById('import-file').click(); }
-
 function handleImport(input) {
   if (!input.files || !input.files[0]) return;
   const reader = new FileReader();
@@ -634,6 +607,7 @@ function handleImport(input) {
       const data = JSON.parse(e.target.result);
       if (data.wardrobe) wardrobe = data.wardrobe;
       if (data.outfits) outfits = data.outfits;
+      if (data.todayOutfit) todayOutfit = data.todayOutfit;
       save(); init();
       toast('导入成功！');
     } catch(err) { toast('导入失败，文件格式错误'); }
@@ -641,13 +615,11 @@ function handleImport(input) {
   reader.readAsText(input.files[0]);
   input.value = '';
 }
-
 function clearAll() {
   if (!confirm('确定清空所有数据？此操作不可恢复！')) return;
-  wardrobe=[]; outfits=[]; CATS.forEach(c=>tryon[c]=null);
+  wardrobe=[]; outfits=[]; todayOutfit=null; CATS.forEach(c=>tryon[c]=null);
   save(); init(); toast('已清空全部数据');
 }
-
 init();
 </script>
 </body>
