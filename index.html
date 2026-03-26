@@ -608,7 +608,7 @@ function handleImport(input) {
       if (data.wardrobe) wardrobe = data.wardrobe;
       if (data.outfits) outfits = data.outfits;
       if (data.todayOutfit) todayOutfit = data.todayOutfit;
-      save(); init();
+      save(); 
       toast('导入成功！');
     } catch(err) { toast('导入失败，文件格式错误'); }
   };
@@ -618,8 +618,157 @@ function handleImport(input) {
 function clearAll() {
   if (!confirm('确定清空所有数据？此操作不可恢复！')) return;
   wardrobe=[]; outfits=[]; todayOutfit=null; CATS.forEach(c=>tryon[c]=null);
-  save(); init(); toast('已清空全部数据');
+  save();  toast('已清空全部数据');
 }
+
+
+// === NEW FEATURES v3 ===
+// Add random outfit
+window.randomOutfit = function() {
+  if (wardrobe.length < 3) { toast('衣物太少，至少需要3件~'); return; }
+  const byCat = {};
+  CATS.forEach(c => { byCat[c] = wardrobe.filter(i => i.cat === c); });
+  const picks = {};
+  CATS.forEach(c => {
+    const arr = byCat[c];
+    if (arr.length) picks[c] = arr[Math.floor(Math.random() * arr.length)];
+  });
+  // Clear dress vs top+bottom
+  if (picks.dress) { picks.top = null; picks.bottom = null; }
+  else if (picks.top || picks.bottom) { picks.dress = null; }
+  CATS.forEach(c => tryon[c] = picks[c] || null);
+  renderTryon(); updateTryonMini(); renderWardrobe();
+  switchTab('tryon');
+  toast('随机搭配已生成！🎲');
+};
+
+// Add like/toggle for outfits
+window.toggleLike = function(id, el) {
+  const o = outfits.find(x => x.id == id);
+  if (!o) return;
+  o.liked = !o.liked;
+  save();
+  el.textContent = o.liked ? '❤️' : '🤍';
+  el.style.transform = 'scale(1.3)';
+  setTimeout(() => el.style.transform = 'scale(1)', 200);
+};
+
+// Add season filter to wardrobe
+window.currentSeason = 'any';
+window.setSeason = function(s, el) {
+  currentSeason = s;
+  document.querySelectorAll('.season-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderWardrobe();
+};
+
+// Color detection (simple dominant color from canvas)
+window.detectColor = function(dataUrl, callback) {
+  const img = new Image();
+  img.crossOrigin = 'Anonymous';
+  img.onload = function() {
+    const c = document.createElement('canvas');
+    c.width = 10; c.height = 10;
+    const ctx = c.getContext('2d');
+    ctx.drawImage(img, 0, 0, 10, 10);
+    try {
+      const d = ctx.getImageData(0,0,10,10).data;
+      let r=0,g=0,b=0,n=d.length/4;
+      for(let i=0;i<d.length;i+=4){r+=d[i];g+=d[i+1];b+=d[i+2];}
+      r=Math.round(r/n);g=Math.round(g/n);b=Math.round(b/n);
+      // Map to color name
+      const colors = [
+        {name:'红',r:200,g:0,b:50}, {name:'粉',r:255,g:100,b:150},
+        {name:'橙',r:255,g:150,b:50}, {name:'黄',r:255,g:220,b:50},
+        {name:'绿',r:50,g:150,b:80}, {name:'蓝',r:50,g:100,b:200},
+        {name:'紫',r:120,g:50,b:180}, {name:'白',r:240,g:240,b:240},
+        {name:'灰',r:150,g:150,b:150}, {name:'黑',r:30,g:30,b:30},
+        {name:'棕',r:139,g:90,b:60}
+      ];
+      let best = colors[0], bestDist = Infinity;
+      colors.forEach(c => {
+        const d = Math.sqrt((c.r-r)**2+(c.g-g)**2+(c.b-b)**2);
+        if(d<bestDist){bestDist=d;best=c;}
+      });
+      callback(best.name);
+    } catch(e) { callback('未知'); }
+  };
+  img.src = dataUrl;
+};
+
+// Override handleUpload to auto-detect color
+const _handleUpload = handleUpload;
+window.handleUpload = function(input) {
+  if (!input.files) return;
+  const cats = prompt('选择分类：1=上衣 2=下装 3=连衣裙 4=鞋子 5=配饰') || '1';
+  const catMap = {1:'top',2:'bottom',3:'dress',4:'shoes',5:'hat'};
+  const cat = catMap[cats.trim()] || 'top';
+  let count = 0;
+  Array.from(input.files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      detectColor(e.target.result, color => {
+        wardrobe.push({ id: Date.now()+Math.random(), name: file.name.replace(/\.[^.]+$/,'').slice(0,10), cat, data: e.target.result, color });
+        count++;
+        if (count === input.files.length) { save(); renderWardrobe(); renderStats(); checkAchievements(); toast('上传成功 '+count+' 件！'); }
+      });
+    };
+    reader.readAsDataURL(file);
+  });
+  input.value = '';
+};
+
+// Season chips (inject into wardrobe page)
+window.addSeasonChips = function() {
+  const catTabs = document.getElementById('cat-tabs');
+  const seasonBar = document.createElement('div');
+  seasonBar.className = 'weather-strip';
+  seasonBar.id = 'season-strip';
+  seasonBar.innerHTML = '<span class="season-chip active" data-s="any" onclick="setSeason(\x27any\x27,this)" style="padding:4px 10px;background:var(--pink-light);border-radius:12px;font-size:10px;cursor:pointer;border:1.5px solid transparent;transition:all 0.2s;">🌍 全部</span><span class="season-chip" data-s="spring" onclick="setSeason(\x27spring\x27,this)" style="padding:4px 10px;background:var(--pink-light);border-radius:12px;font-size:10px;cursor:pointer;border:1.5px solid transparent;transition:all 0.2s;">🌸 春夏</span><span class="season-chip" data-s="autumn" onclick="setSeason(\x27autumn\x27,this)" style="padding:4px 10px;background:var(--pink-light);border-radius:12px;font-size:10px;cursor:pointer;border:1.5px solid transparent;transition:all 0.2s;">🍂 秋冬</span>';
+  catTabs.parentNode.insertBefore(seasonBar, catTabs.nextSibling);
+};
+
+// Override renderWardrobe for season filter
+const _renderWardrobe = renderWardrobe;
+window.renderWardrobe = function() {
+  const grid = document.getElementById('wardrobe-grid');
+  const empty = document.getElementById('empty-wardrobe');
+  let items = currentCat === 'all' ? wardrobe : wardrobe.filter(i => i.cat === currentCat);
+  if (currentWeather !== 'any') {
+    const weatherMap = {sunny:['top','dress'],rainy:['hat','top','bottom'],cold:['top','hat','bottom'],hot:['top','dress','shoes']};
+    const allowed = weatherMap[currentWeather] || CATS;
+    items = items.filter(i => allowed.includes(i.cat));
+  }
+  if (currentSeason !== 'any') {
+    const seasonMap = {spring:['top','dress','shoes'],autumn:['top','bottom','hat','shoes']};
+    const allowed = seasonMap[currentSeason] || CATS;
+    items = items.filter(i => allowed.includes(i.cat));
+  }
+  if (!items.length) { grid.innerHTML = ''; empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+  grid.innerHTML = items.map((item,i) => {
+    const sel = Object.values(tryon).some(v => v && v.id === item.id);
+    const colorDot = item.color ? '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+(item.color==='红'?'#e53935':item.color==='粉'?'#ff6b9d':item.color==='蓝'?'#1e88e5':item.color==='绿'?'#43a047':item.color==='黄'?'#fdd835':item.color==='紫'?'#8e24aa':item.color==='白'?'#f5f5f5':item.color==='灰'?'#9e9e9e':item.color==='黑'?'#212121':item.color==='棕'?'#8d6e63':'#fff')+';vertical-align:middle;margin-left:2px;"></span>' : '';
+    return '<div class="clothes-item'+(sel?' selected':'')+'" onclick="toggleWardrobeItem(\''+item.id+'\')" style="animation-delay:'+(i*0.03)+'s"><img class="item-img" src="'+item.data+'" alt="'+item.name+'"><div class="item-name">'+item.name+colorDot+'</div><div class="delete-btn" onclick="event.stopPropagation();deleteItem(\''+item.id+'\')">×</div></div>';
+  }).join('');
+};
+
+// Init hook for v3
+const _init = init;
+window.init = function() {
+  _init();
+  addSeasonChips();
+  // Add random outfit button to tryon page
+  const ctrlPanel = document.querySelector('.tryon-controls');
+  if (ctrlPanel) {
+    const randBtn = document.createElement('button');
+    randBtn.className = 'ctrl-btn secondary';
+    randBtn.textContent = '🎲 随机';
+    randBtn.onclick = randomOutfit;
+    ctrlPanel.insertBefore(randBtn, ctrlPanel.firstChild);
+  }
+};
+
 init();
 </script>
 </body>
