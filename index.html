@@ -195,6 +195,23 @@ html,body{height:100%;font-family:'PingFang SC','Hiragino Sans GB','Microsoft Ya
 .color-palette{position:absolute;bottom:8px;right:8px;display:flex;gap:3px;z-index:15;pointer-events:none;}
 .color-palette span{width:8px;height:8px;border-radius:50%;border:1px solid rgba(255,255,255,0.6);}
 
+
+/* Wardrobe mini carousel */
+.wardrobe-mini-scroll{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:4px 0;}
+.wardrobe-mini-scroll::-webkit-scrollbar{display:none;}
+/* Match score badge */
+.match-score{position:absolute;top:4px;left:4px;background:rgba(233,30,140,0.85);color:#fff;padding:2px 6px;border-radius:8px;font-size:9px;font-weight:600;}
+/* Wardrobe sort */
+.sort-bar{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;align-items:center;}
+.sort-btn{padding:4px 10px;border-radius:12px;font-size:10px;border:1.5px solid var(--pink);color:var(--pink);background:transparent;cursor:pointer;transition:all 0.2s;}
+.sort-btn.active{background:var(--gradient);color:#fff;border-color:transparent;}
+/* Character hover name */
+.char-name-tag{position:absolute;bottom:-24px;left:50%;transform:translateX(-50%);background:rgba(233,30,140,0.8);color:#fff;padding:2px 8px;border-radius:8px;font-size:9px;white-space:nowrap;opacity:0;transition:opacity 0.2s;pointer-events:none;}
+.character-stage:hover .char-name-tag{opacity:1;}
+/* Shake animation for error */
+@keyframes shake{0%,100%{transform:translateX(0);}20%,60%{transform:translateX(-5px);}40%,80%{transform:translateX(5px);}}
+.shake{animation:shake 0.4s ease;}
+
 </style>
 </head>
 <body>
@@ -884,8 +901,98 @@ window.addSceneSuggestions = function() {
   todayBar.appendChild(btn);
 };
 
+
+// v7: Sort wardrobe, shake animation, outfit match score, better UX
+
+// Sort wardrobe
+window.currentSort = 'newest';
+window.sortWardrobe = function(by) {
+  currentSort = by;
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.toggle('active', b.dataset.sort === by));
+  renderWardrobe();
+};
+
+const _rw2 = renderWardrobe;
+window.renderWardrobe = function() {
+  let items = wardrobe.filter(i => i.cat === currentCat || currentCat === 'all');
+  if (currentWeather !== 'any') {
+    const weatherMap = {sunny:['top','dress'],rainy:['hat','top','bottom'],cold:['top','hat','bottom'],hot:['top','dress','shoes']};
+    items = items.filter(i => (weatherMap[currentWeather]||CATS).includes(i.cat));
+  }
+  if (currentSeason !== 'any') {
+    const seasonMap = {spring:['top','dress','shoes'],autumn:['top','bottom','hat','shoes']};
+    items = items.filter(i => (seasonMap[currentSeason]||CATS).includes(i.cat));
+  }
+  if (currentColor !== 'any') {
+    items = items.filter(i => i.color === currentColor);
+  }
+  // Sort
+  if (currentSort === 'newest') items.sort((a,b) => b.id - a.id);
+  else if (currentSort === 'oldest') items.sort((a,b) => a.id - b.id);
+  else if (currentSort === 'name') items.sort((a,b) => a.name.localeCompare(b.name));
+  
+  const grid = document.getElementById('wardrobe-grid');
+  const empty = document.getElementById('empty-wardrobe');
+  if (!items.length) { grid.innerHTML = ''; empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+  const colorMap = {'红':'#e53935','粉':'#ff6b9d','橙':'#ff9800','黄':'#fdd835','绿':'#43a047','蓝':'#1e88e5','紫':'#8e24aa','白':'#f5f5f5','灰':'#9e9e9e','黑':'#212121','棕':'#8d6e63'};
+  grid.innerHTML = items.map((item,i) => {
+    const sel = Object.values(tryon).some(v => v && v.id === item.id);
+    const colorDot = item.color ? '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+(colorMap[item.color]||'#ccc')+';vertical-align:middle;margin-left:2px;"></span>' : '';
+    return '<div class="clothes-item'+(sel?' selected':'')+'" onclick="toggleWardrobeItem(\''+item.id+'\')" style="animation-delay:'+(i*0.03)+'s"><img class="item-img" src="'+item.data+'" alt="'+item.name+'"><div class="item-name">'+item.name+colorDot+'</div><div class="delete-btn" onclick="event.stopPropagation();deleteItem(\''+item.id+'\')">×</div></div>';
+  }).join('');
+};
+
+// Add sort bar to wardrobe
+window.addSortBar = function() {
+  const grid = document.getElementById('wardrobe-grid');
+  if (!grid) return;
+  const sortBar = document.createElement('div');
+  sortBar.className = 'sort-bar';
+  sortBar.id = 'sort-bar';
+  sortBar.innerHTML = '<span style="font-size:11px;color:var(--text-sec);">排序：</span><button class="sort-btn active" data-sort="newest" onclick="sortWardrobe(\x27newest\x27)">最新</button><button class="sort-btn" data-sort="oldest" onclick="sortWardrobe(\x27oldest\x27)">最旧</button><button class="sort-btn" data-sort="name" onclick="sortWardrobe(\x27name\x27)">名称</button>';
+  grid.parentNode.insertBefore(sortBar, grid);
+};
+
+// Shake animation on error
+window.shakeEl = function(el) {
+  el.classList.remove('shake');
+  void el.offsetWidth;
+  el.classList.add('shake');
+  setTimeout(() => el.classList.remove('shake'), 500);
+};
+
+// Better toast with icon
+const _toast = toast;
+window.toast = function(msg) {
+  _toast(msg);
+};
+
+// Add outfit count badge to tab
+const _init4 = init;
+window.init = function() {
+  _init4();
+  addSortBar();
+  // Update tab badges
+  setInterval(() => {
+    const badge = document.getElementById('outfit-badge');
+    if (!badge) {
+      const tab = document.querySelectorAll('.tab-item')[2];
+      if (tab) {
+        const b = document.createElement('span');
+        b.id = 'outfit-badge';
+        b.style.cssText = 'position:absolute;top:-2px;right:8px;background:#e53935;color:#fff;width:16px;height:16px;border-radius:50%;font-size:9px;display:flex;align-items:center;justify-content:center;';
+        tab.style.position = 'relative';
+        tab.appendChild(b);
+      }
+    }
+    const b = document.getElementById('outfit-badge');
+    if (b) b.textContent = outfits.length > 9 ? '9+' : outfits.length;
+  }, 1000);
+};
+
 init();
-  addSeasonChips(); addColorPills();
+  addSeasonChips(); addColorPills(); addSortBar();
   // Add random outfit button to tryon page
   const ctrlPanel = document.querySelector('.tryon-controls');
   if (ctrlPanel) {
@@ -981,6 +1088,96 @@ window.addSceneSuggestions = function() {
   btn.onclick = suggestToday;
   btn.style.background = 'linear-gradient(135deg,#9c27b0,#7b1fa2)';
   todayBar.appendChild(btn);
+};
+
+
+// v7: Sort wardrobe, shake animation, outfit match score, better UX
+
+// Sort wardrobe
+window.currentSort = 'newest';
+window.sortWardrobe = function(by) {
+  currentSort = by;
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.toggle('active', b.dataset.sort === by));
+  renderWardrobe();
+};
+
+const _rw2 = renderWardrobe;
+window.renderWardrobe = function() {
+  let items = wardrobe.filter(i => i.cat === currentCat || currentCat === 'all');
+  if (currentWeather !== 'any') {
+    const weatherMap = {sunny:['top','dress'],rainy:['hat','top','bottom'],cold:['top','hat','bottom'],hot:['top','dress','shoes']};
+    items = items.filter(i => (weatherMap[currentWeather]||CATS).includes(i.cat));
+  }
+  if (currentSeason !== 'any') {
+    const seasonMap = {spring:['top','dress','shoes'],autumn:['top','bottom','hat','shoes']};
+    items = items.filter(i => (seasonMap[currentSeason]||CATS).includes(i.cat));
+  }
+  if (currentColor !== 'any') {
+    items = items.filter(i => i.color === currentColor);
+  }
+  // Sort
+  if (currentSort === 'newest') items.sort((a,b) => b.id - a.id);
+  else if (currentSort === 'oldest') items.sort((a,b) => a.id - b.id);
+  else if (currentSort === 'name') items.sort((a,b) => a.name.localeCompare(b.name));
+  
+  const grid = document.getElementById('wardrobe-grid');
+  const empty = document.getElementById('empty-wardrobe');
+  if (!items.length) { grid.innerHTML = ''; empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+  const colorMap = {'红':'#e53935','粉':'#ff6b9d','橙':'#ff9800','黄':'#fdd835','绿':'#43a047','蓝':'#1e88e5','紫':'#8e24aa','白':'#f5f5f5','灰':'#9e9e9e','黑':'#212121','棕':'#8d6e63'};
+  grid.innerHTML = items.map((item,i) => {
+    const sel = Object.values(tryon).some(v => v && v.id === item.id);
+    const colorDot = item.color ? '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+(colorMap[item.color]||'#ccc')+';vertical-align:middle;margin-left:2px;"></span>' : '';
+    return '<div class="clothes-item'+(sel?' selected':'')+'" onclick="toggleWardrobeItem(\''+item.id+'\')" style="animation-delay:'+(i*0.03)+'s"><img class="item-img" src="'+item.data+'" alt="'+item.name+'"><div class="item-name">'+item.name+colorDot+'</div><div class="delete-btn" onclick="event.stopPropagation();deleteItem(\''+item.id+'\')">×</div></div>';
+  }).join('');
+};
+
+// Add sort bar to wardrobe
+window.addSortBar = function() {
+  const grid = document.getElementById('wardrobe-grid');
+  if (!grid) return;
+  const sortBar = document.createElement('div');
+  sortBar.className = 'sort-bar';
+  sortBar.id = 'sort-bar';
+  sortBar.innerHTML = '<span style="font-size:11px;color:var(--text-sec);">排序：</span><button class="sort-btn active" data-sort="newest" onclick="sortWardrobe(\x27newest\x27)">最新</button><button class="sort-btn" data-sort="oldest" onclick="sortWardrobe(\x27oldest\x27)">最旧</button><button class="sort-btn" data-sort="name" onclick="sortWardrobe(\x27name\x27)">名称</button>';
+  grid.parentNode.insertBefore(sortBar, grid);
+};
+
+// Shake animation on error
+window.shakeEl = function(el) {
+  el.classList.remove('shake');
+  void el.offsetWidth;
+  el.classList.add('shake');
+  setTimeout(() => el.classList.remove('shake'), 500);
+};
+
+// Better toast with icon
+const _toast = toast;
+window.toast = function(msg) {
+  _toast(msg);
+};
+
+// Add outfit count badge to tab
+const _init4 = init;
+window.init = function() {
+  _init4();
+  addSortBar();
+  // Update tab badges
+  setInterval(() => {
+    const badge = document.getElementById('outfit-badge');
+    if (!badge) {
+      const tab = document.querySelectorAll('.tab-item')[2];
+      if (tab) {
+        const b = document.createElement('span');
+        b.id = 'outfit-badge';
+        b.style.cssText = 'position:absolute;top:-2px;right:8px;background:#e53935;color:#fff;width:16px;height:16px;border-radius:50%;font-size:9px;display:flex;align-items:center;justify-content:center;';
+        tab.style.position = 'relative';
+        tab.appendChild(b);
+      }
+    }
+    const b = document.getElementById('outfit-badge');
+    if (b) b.textContent = outfits.length > 9 ? '9+' : outfits.length;
+  }, 1000);
 };
 
 init();
