@@ -163,6 +163,24 @@ html,body{height:100%;font-family:'PingFang SC','Hiragino Sans GB','Microsoft Ya
 @keyframes achievementUnlock{0%{transform:scale(0.5) rotate(-10deg);opacity:0;}50%{transform:scale(1.2) rotate(5deg);}100%{transform:scale(1) rotate(0);opacity:1;}}
 .achievement-unlock{animation:achievementUnlock 0.6s cubic-bezier(0.34,1.56,0.64,1);}
 @media (min-width:500px){.page-content::-webkit-scrollbar{width:4px;}.page-content::-webkit-scrollbar-thumb{background:var(--pink-light);border-radius:2px;}}
+
+/* Outfit star rating */
+.outfit-stars{margin-top:4px;cursor:pointer;}
+.outfit-stars span{font-size:12px;opacity:0.4;transition:all 0.15s;display:inline-block;}
+.outfit-stars span.lit{opacity:1;color:#ffd700;transform:scale(1.2);}
+/* Calendar view */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:12px;}
+.cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;font-size:11px;cursor:pointer;background:var(--pink-light);transition:all 0.2s;}
+.cal-day.has-outfit{background:var(--gradient);color:#fff;}
+.cal-day.today{border:2px solid var(--pink-deep);font-weight:700;}
+.cal-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.cal-nav button{background:none;border:none;font-size:16px;cursor:pointer;padding:4px 8px;}
+/* Share button */
+.share-btn{background:none;border:none;font-size:14px;cursor:pointer;padding:4px;}
+/* Outfit detail modal */
+.outfit-detail-tags{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0;}
+.outfit-color-dot{width:12px;height:12px;border-radius:50%;display:inline-block;margin-right:4px;vertical-align:middle;}
+
 </style>
 </head>
 <body>
@@ -235,7 +253,17 @@ html,body{height:100%;font-family:'PingFang SC','Hiragino Sans GB','Microsoft Ya
       </div>
     </div>
     <div class="page" id="page-outfit">
-      <div class="tip-bar">💡 点击「试穿」可直接穿上搭配，长按搭配卡片可删除</div>
+      
+<!-- Outfit history calendar bar (added to outfit page) -->
+<div id="outfit-calendar-bar" style="margin-bottom:12px;">
+  <div class="cal-nav">
+    <button onclick="calNav(-1)">◀</button>
+    <span id="cal-month-str" style="font-size:13px;font-weight:700;color:var(--pink-deep);"></span>
+    <button onclick="calNav(1)">▶</button>
+  </div>
+  <div class="cal-grid" id="cal-grid"></div>
+</div>
+<div class="tip-bar">💡 点击「试穿」可直接穿上搭配，长按搭配卡片可删除</div>
       <div class="new-outfit-card" onclick="showNewOutfitModal()"><p>✨ 创建新搭配</p><span>选择几件心仪的衣服，生成一套完整搭配</span></div>
       <div id="outfit-list"><div class="empty-hint" id="empty-outfit"><p>🌸 还没有搭配方案</p><p style="font-size:11px;color:var(--pink);margin-top:8px;">去试穿页选好衣服，点击「添加到搭配」吧~</p></div></div>
     </div>
