@@ -1,0 +1,43 @@
+name: tryon_app
+description: "A virtual try-on Flutter application supporting iOS, Android, and Web."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.3
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  
+  # HTTP client
+  dio: ^5.4.0
+  
+  # State management
+  provider: ^6.1.1
+  
+  # Local storage
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  
+  # Image handling
+  cached_network_image: ^3.3.1
+  image_picker: ^1.0.7
+  
+  # Utilities
+  path_provider: ^2.1.2
+  shared_preferences: ^2.2.2
+  json_annotation: ^4.8.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  hive_generator: ^2.0.1
+  build_runner: ^2.4.8
+  json_serializable: ^6.7.1
+
+flutter:
+  uses-material-design: true
