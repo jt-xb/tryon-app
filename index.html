@@ -232,6 +232,24 @@ html,body{height:100%;font-family:'PingFang SC','Hiragino Sans GB','Microsoft Ya
 .combo-badge{position:absolute;top:-8px;left:-8px;background:#ff9800;color:#fff;width:22px;height:22px;border-radius:50%;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;animation:pulse 2s infinite;}
 @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.15);}}
 
+
+/* Floating action button */
+.fab{position:fixed;bottom:90px;right:20px;width:52px;height:52px;background:var(--gradient);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 16px rgba(233,30,140,0.4);cursor:pointer;border:none;z-index:90;transition:all 0.2s;}
+.fab:active{transform:scale(0.9);}
+/* Smooth page transitions */
+.page{transition:opacity 0.2s ease,transform 0.3s ease;}
+/* Outfit description card */
+.outfit-desc-card{background:linear-gradient(135deg,#fff0f6,#ffe0ef);border-radius:16px;padding:16px;margin-bottom:12px;border:2px solid rgba(255,107,157,0.15);}
+.outfit-desc-title{font-size:14px;font-weight:700;color:var(--pink-deep);margin-bottom:8px;}
+/* Wardrobe progress bar */
+.wardrobe-progress{background:var(--pink-light);border-radius:12px;height:8px;margin-bottom:14px;overflow:hidden;}
+.wardrobe-progress-fill{height:100%;background:var(--gradient);border-radius:12px;transition:width 0.5s ease;}
+/* Better scroll */
+body{scroll-behavior:smooth;}
+/* Tab badge animation */
+@keyframes badgePop{0%{transform:scale(0);}70%{transform:scale(1.2);}100%{transform:scale(1);}}
+.badge-pop{animation:badgePop 0.4s cubic-bezier(0.34,1.56,0.64,1);}
+
 </style>
 </head>
 <body>
@@ -1377,6 +1395,116 @@ window.renderOutfits = function() {
   _ro();
 };
 
+
+// v10: FAB, wardrobe progress, outfit completeness progress, smooth transitions
+
+// Wardrobe progress bar
+window.renderProgress = function() {
+  const catCounts = {total:wardrobe.length,top:0,bottom:0,dress:0,shoes:0,hat:0};
+  wardrobe.forEach(i => { if(catCounts[i.cat]!==undefined) catCounts[i.cat]++; });
+  const needed = {top:1,bottom:1,dress:1,shoes:1,hat:0}; // hat optional
+  let total = 0, filled = 0;
+  Object.entries(needed).forEach(([cat,amt]) => {
+    total += amt;
+    filled += Math.min(catCounts[cat], amt);
+  });
+  const pct = Math.round((filled/total)*100);
+  let barEl = document.getElementById('wardrobe-progress-bar');
+  let barFill = document.getElementById('wardrobe-progress-fill');
+  if (!barEl) {
+    const catTabs = document.getElementById('cat-tabs');
+    if (!catTabs) return;
+    barEl = document.createElement('div');
+    barEl.id = 'wardrobe-progress-bar';
+    barEl.className = 'wardrobe-progress';
+    barFill = document.createElement('div');
+    barFill.id = 'wardrobe-progress-fill';
+    barFill.style.width = pct + '%';
+    barEl.appendChild(barFill);
+    catTabs.parentNode.insertBefore(barEl, catTabs);
+  }
+  barFill.style.width = pct + '%';
+  let pctEl = document.getElementById('wardrobe-progress-text');
+  if (!pctEl) {
+    pctEl = document.createElement('div');
+    pctEl.id = 'wardrobe-progress-text';
+    pctEl.style.cssText = 'font-size:10px;color:var(--text-sec);margin-bottom:6px;';
+    barEl.parentNode.insertBefore(pctEl, barEl);
+  }
+  pctEl.textContent = '衣橱完整度 ' + pct + '%' + (pct===100?' 🎉':'');
+};
+
+// Patch renderWardrobe to include progress
+const _rw3 = renderWardrobe;
+window.renderWardrobe = function() {
+  _rw3();
+  renderProgress();
+};
+
+// FAB: quick add outfit from tryon
+window.addFab = function() {
+  if (document.getElementById('fab')) return;
+  const fab = document.createElement('button');
+  fab.id = 'fab';
+  fab.className = 'fab';
+  fab.innerHTML = '✨';
+  fab.title = '快速保存当前穿搭';
+  fab.onclick = () => {
+    const hasClothes = Object.values(tryon).some(v => v);
+    if (!hasClothes) { toast('请先选择衣物~'); return; }
+    const name = suggestOutfitName();
+    const items = CATS.filter(c => tryon[c]).map(c => ({cat:c, itemId:tryon[c].id,data:tryon[c].data,name:tryon[c].name}));
+    outfits.push({id:Date.now(),name,items});
+    save(); renderOutfits(); renderStats();
+    toast('穿搭已保存！✨');
+    playSound('success');
+  };
+  document.body.appendChild(fab);
+};
+
+// Auto-naming based on scene
+const _suggestOutfitName = suggestOutfitName;
+window.suggestOutfitName = function() {
+  const scene = document.getElementById('scene-select')?.value || 'daily';
+  const scenes = {daily:'日常',work:'通勤',date:'约会',party:'派对',sport:'运动'};
+  const sceneStr = scenes[scene] || '日常';
+  const colors = CATS.map(c => tryon[c]).filter(Boolean).map(i=>i.color).filter(Boolean);
+  const colorStr = colors[0] || '';
+  return sceneStr + (colorStr?colorStr:'') + '穿搭';
+};
+
+// Update badge with animation
+window.updateBadgeAnimated = function() {
+  const b = document.getElementById('outfit-badge');
+  if (b) {
+    b.textContent = outfits.length > 9 ? '9+' : outfits.length;
+    b.classList.remove('badge-pop');
+    void b.offsetWidth;
+    b.classList.add('badge-pop');
+  }
+};
+
+// Patch save to update badge
+const _save = save;
+window.save = function() {
+  _save();
+  updateBadgeAnimated();
+};
+
+// Init v10
+const _init7 = init;
+window.init = function() {
+  _init7();
+  addFab();
+  renderProgress();
+};
+
+// Periodic tip rotate
+window.rotateTip = function() {
+  currentTip++;
+  showTip();
+};
+
 init();
   addSeasonChips(); addColorPills(); addSortBar();
   // Add random outfit button to tryon page
@@ -1848,6 +1976,116 @@ window.renderOutfits = function() {
   const html = _ro.toString();
   // Will be handled by patch below
   _ro();
+};
+
+
+// v10: FAB, wardrobe progress, outfit completeness progress, smooth transitions
+
+// Wardrobe progress bar
+window.renderProgress = function() {
+  const catCounts = {total:wardrobe.length,top:0,bottom:0,dress:0,shoes:0,hat:0};
+  wardrobe.forEach(i => { if(catCounts[i.cat]!==undefined) catCounts[i.cat]++; });
+  const needed = {top:1,bottom:1,dress:1,shoes:1,hat:0}; // hat optional
+  let total = 0, filled = 0;
+  Object.entries(needed).forEach(([cat,amt]) => {
+    total += amt;
+    filled += Math.min(catCounts[cat], amt);
+  });
+  const pct = Math.round((filled/total)*100);
+  let barEl = document.getElementById('wardrobe-progress-bar');
+  let barFill = document.getElementById('wardrobe-progress-fill');
+  if (!barEl) {
+    const catTabs = document.getElementById('cat-tabs');
+    if (!catTabs) return;
+    barEl = document.createElement('div');
+    barEl.id = 'wardrobe-progress-bar';
+    barEl.className = 'wardrobe-progress';
+    barFill = document.createElement('div');
+    barFill.id = 'wardrobe-progress-fill';
+    barFill.style.width = pct + '%';
+    barEl.appendChild(barFill);
+    catTabs.parentNode.insertBefore(barEl, catTabs);
+  }
+  barFill.style.width = pct + '%';
+  let pctEl = document.getElementById('wardrobe-progress-text');
+  if (!pctEl) {
+    pctEl = document.createElement('div');
+    pctEl.id = 'wardrobe-progress-text';
+    pctEl.style.cssText = 'font-size:10px;color:var(--text-sec);margin-bottom:6px;';
+    barEl.parentNode.insertBefore(pctEl, barEl);
+  }
+  pctEl.textContent = '衣橱完整度 ' + pct + '%' + (pct===100?' 🎉':'');
+};
+
+// Patch renderWardrobe to include progress
+const _rw3 = renderWardrobe;
+window.renderWardrobe = function() {
+  _rw3();
+  renderProgress();
+};
+
+// FAB: quick add outfit from tryon
+window.addFab = function() {
+  if (document.getElementById('fab')) return;
+  const fab = document.createElement('button');
+  fab.id = 'fab';
+  fab.className = 'fab';
+  fab.innerHTML = '✨';
+  fab.title = '快速保存当前穿搭';
+  fab.onclick = () => {
+    const hasClothes = Object.values(tryon).some(v => v);
+    if (!hasClothes) { toast('请先选择衣物~'); return; }
+    const name = suggestOutfitName();
+    const items = CATS.filter(c => tryon[c]).map(c => ({cat:c, itemId:tryon[c].id,data:tryon[c].data,name:tryon[c].name}));
+    outfits.push({id:Date.now(),name,items});
+    save(); renderOutfits(); renderStats();
+    toast('穿搭已保存！✨');
+    playSound('success');
+  };
+  document.body.appendChild(fab);
+};
+
+// Auto-naming based on scene
+const _suggestOutfitName = suggestOutfitName;
+window.suggestOutfitName = function() {
+  const scene = document.getElementById('scene-select')?.value || 'daily';
+  const scenes = {daily:'日常',work:'通勤',date:'约会',party:'派对',sport:'运动'};
+  const sceneStr = scenes[scene] || '日常';
+  const colors = CATS.map(c => tryon[c]).filter(Boolean).map(i=>i.color).filter(Boolean);
+  const colorStr = colors[0] || '';
+  return sceneStr + (colorStr?colorStr:'') + '穿搭';
+};
+
+// Update badge with animation
+window.updateBadgeAnimated = function() {
+  const b = document.getElementById('outfit-badge');
+  if (b) {
+    b.textContent = outfits.length > 9 ? '9+' : outfits.length;
+    b.classList.remove('badge-pop');
+    void b.offsetWidth;
+    b.classList.add('badge-pop');
+  }
+};
+
+// Patch save to update badge
+const _save = save;
+window.save = function() {
+  _save();
+  updateBadgeAnimated();
+};
+
+// Init v10
+const _init7 = init;
+window.init = function() {
+  _init7();
+  addFab();
+  renderProgress();
+};
+
+// Periodic tip rotate
+window.rotateTip = function() {
+  currentTip++;
+  showTip();
 };
 
 init();
