@@ -181,6 +181,20 @@ html,body{height:100%;font-family:'PingFang SC','Hiragino Sans GB','Microsoft Ya
 .outfit-detail-tags{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0;}
 .outfit-color-dot{width:12px;height:12px;border-radius:50%;display:inline-block;margin-right:4px;vertical-align:middle;}
 
+
+/* Daily tip banner */
+.daily-tip{background:linear-gradient(90deg,#ff6b9d,#e91e8c,#ff6b9d);background-size:200% auto;animation:tip-shimmer 3s linear infinite;padding:8px 16px;border-radius:16px;margin-bottom:14px;color:#fff;font-size:11px;text-align:center;letter-spacing:0.5px;}
+@keyframes tip-shimmer{0%{background-position:0% center;}100%{background-position:200% center;}}
+/* Notification badge */
+.notif-badge{position:absolute;top:-4px;right:-4px;background:#e53935;color:#fff;width:16px;height:16px;border-radius:50%;font-size:9px;display:flex;align-items:center;justify-content:center;}
+/* Tag filter pills */
+.filter-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.filter-pill{padding:4px 10px;border-radius:12px;font-size:10px;background:var(--pink-light);color:var(--text-sec);cursor:pointer;border:1px solid transparent;transition:all 0.2s;}
+.filter-pill.active{background:var(--pink);color:#fff;border-color:var(--pink-deep);}
+/* Color palette strip on stage */
+.color-palette{position:absolute;bottom:8px;right:8px;display:flex;gap:3px;z-index:15;pointer-events:none;}
+.color-palette span{width:8px;height:8px;border-radius:50%;border:1px solid rgba(255,255,255,0.6);}
+
 </style>
 </head>
 <body>
@@ -785,7 +799,7 @@ window.renderWardrobe = function() {
 const _init = init;
 window.init = function() {
   _init();
-  addSeasonChips();
+  addSeasonChips(); addColorPills();
   // Add random outfit button to tryon page
   const ctrlPanel = document.querySelector('.tryon-controls');
   if (ctrlPanel) {
