@@ -305,6 +305,7 @@ html,body{height:100%;font-family:'PingFang SC','Hiragino Sans GB','Microsoft Ya
           <div class="clothing-layer layer-top" id="layer-top"></div>
           <div class="clothing-layer layer-dress hidden" id="layer-dress"></div>
           <div class="clothing-layer layer-bottom" id="layer-bottom"></div>
+          <button class="photo-btn" onclick="photoMode()" title="保存照片">📷</button>
           <div class="clothing-layer layer-shoes" id="layer-shoes"></div>
         </div>
         <div class="tryon-controls">
@@ -1015,7 +1016,7 @@ window.sortWardrobe = function(by) {
 
 const _rw2 = renderWardrobe;
 window.renderWardrobe = function() {
-  let items = wardrobe.filter(i => i.cat === currentCat || currentCat === 'all');
+  let items = currentCat === 'all' ? wardrobe : wardrobe.filter(i => i.cat === currentCat);
   if (currentWeather !== 'any') {
     const weatherMap = {sunny:['top','dress'],rainy:['hat','top','bottom'],cold:['top','hat','bottom'],hot:['top','dress','shoes']};
     items = items.filter(i => (weatherMap[currentWeather]||CATS).includes(i.cat));
@@ -1256,6 +1257,124 @@ const _switchTab = switchTab;
 window.switchTab = function(tab) {
   _switchTab(tab);
   if (tab === 'my') { renderWeeklyChart(); addComboToStats(); }
+};
+
+
+// v9: Photo mode, share card, OOTD badge, full outfit detection, outfit naming
+
+// Detect if outfit is complete (all 5 categories filled)
+window.isOutfitComplete = function() {
+  const cats = CATS.filter(c => c !== 'hat'); // hat is optional
+  const filled = cats.filter(c => tryon[c]);
+  return filled.length >= 3; // at least 3 pieces = outfit
+};
+
+// Full outfit animation when complete
+window.checkFullOutfit = function() {
+  if (isOutfitComplete()) {
+    const stage = document.getElementById('character-stage');
+    if (stage) {
+      stage.classList.add('outfit-bonus');
+      setTimeout(() => stage.classList.remove('outfit-bonus'), 500);
+      // Show OOTD badge
+      let ootd = document.getElementById('ootd-badge');
+      if (!ootd) {
+        ootd = document.createElement('div');
+        ootd.id = 'ootd-badge';
+        ootd.className = 'ootd-badge';
+        stage.style.position = 'relative';
+        stage.appendChild(ootd);
+      }
+      ootd.textContent = '✨ 今日穿搭';
+      ootd.style.display = 'block';
+    }
+  }
+};
+
+// Patch renderTryon to check full outfit
+const _rt = renderTryon;
+window.renderTryon = function() {
+  _rt();
+  setTimeout(checkFullOutfit, 100);
+};
+
+// Photo mode: capture stage as image
+window.photoMode = function() {
+  const stage = document.getElementById('character-stage');
+  if (!stage) return;
+  html2canvas(stage).then(canvas => {
+    const dataUrl = canvas.toDataURL('image/png');
+    const a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = 'outfit-' + Date.now() + '.png';
+    a.click();
+    playSound('success');
+    toast('穿搭照片已保存！📸');
+  }).catch(() => {
+    toast('截图功能暂不可用，请长按截图~');
+  });
+};
+
+// Auto-save outfit name suggestion
+window.suggestOutfitName = function() {
+  const cats = CATS.map(c => tryon[c]).filter(Boolean);
+  if (!cats.length) return '今日穿搭';
+  const colors = cats.map(c => c.color).filter(Boolean);
+  const scene = document.getElementById('scene-select')?.value || '日常';
+  const colorName = colors[0] || '';
+  const scenes = {daily:'日常',work:'通勤',date:'约会',party:'派对',sport:'运动'};
+  return (scenes[scene] || scene) + (colorName ? colorName : '') + '装';
+};
+
+// Auto-fill outfit name
+window.autofillOutfitName = function() {
+  document.getElementById('outfit-name-input').value = suggestOutfitName();
+};
+
+// Patch showNewOutfitModal to auto-fill name
+const _showNewOutfitModal = showNewOutfitModal;
+window.showNewOutfitModal = function() {
+  _showNewOutfitModal();
+  setTimeout(autofillOutfitName, 100);
+};
+
+// Add photo button to stage
+window.addPhotoBtn = function() {
+  const stage = document.getElementById('character-stage');
+  if (!stage) return;
+  const btn = document.createElement('button');
+  btn.className = 'photo-btn';
+  btn.innerHTML = '📷';
+  btn.title = '保存穿搭照片';
+  btn.onclick = photoMode;
+  stage.appendChild(btn);
+};
+
+// Patch init
+const _init6 = init;
+window.init = function() {
+  _init6();
+  addPhotoBtn();
+};
+
+// Share outfit as text
+window.shareOutfit = function(id) {
+  const o = outfits.find(x => x.id == id);
+  if (!o) return;
+  const text = '✨ 我的今日穿搭「' + o.name + '」：' + o.items.map(i => CAT_NAMES[i.cat]).join(' + ') + ' #奇迹暖暖 #穿搭乐园';
+  if (navigator.share) {
+    navigator.share({ title: '我的穿搭', text });
+  } else {
+    navigator.clipboard.writeText(text).then(() => toast('搭配文字已复制！'));
+  }
+};
+
+// Add share button to outfit cards
+const _ro = renderOutfits;
+window.renderOutfits = function() {
+  const html = _ro.toString();
+  // Will be handled by patch below
+  _ro();
 };
 
 init();
@@ -1370,7 +1489,7 @@ window.sortWardrobe = function(by) {
 
 const _rw2 = renderWardrobe;
 window.renderWardrobe = function() {
-  let items = wardrobe.filter(i => i.cat === currentCat || currentCat === 'all');
+  let items = currentCat === 'all' ? wardrobe : wardrobe.filter(i => i.cat === currentCat);
   if (currentWeather !== 'any') {
     const weatherMap = {sunny:['top','dress'],rainy:['hat','top','bottom'],cold:['top','hat','bottom'],hot:['top','dress','shoes']};
     items = items.filter(i => (weatherMap[currentWeather]||CATS).includes(i.cat));
@@ -1611,6 +1730,124 @@ const _switchTab = switchTab;
 window.switchTab = function(tab) {
   _switchTab(tab);
   if (tab === 'my') { renderWeeklyChart(); addComboToStats(); }
+};
+
+
+// v9: Photo mode, share card, OOTD badge, full outfit detection, outfit naming
+
+// Detect if outfit is complete (all 5 categories filled)
+window.isOutfitComplete = function() {
+  const cats = CATS.filter(c => c !== 'hat'); // hat is optional
+  const filled = cats.filter(c => tryon[c]);
+  return filled.length >= 3; // at least 3 pieces = outfit
+};
+
+// Full outfit animation when complete
+window.checkFullOutfit = function() {
+  if (isOutfitComplete()) {
+    const stage = document.getElementById('character-stage');
+    if (stage) {
+      stage.classList.add('outfit-bonus');
+      setTimeout(() => stage.classList.remove('outfit-bonus'), 500);
+      // Show OOTD badge
+      let ootd = document.getElementById('ootd-badge');
+      if (!ootd) {
+        ootd = document.createElement('div');
+        ootd.id = 'ootd-badge';
+        ootd.className = 'ootd-badge';
+        stage.style.position = 'relative';
+        stage.appendChild(ootd);
+      }
+      ootd.textContent = '✨ 今日穿搭';
+      ootd.style.display = 'block';
+    }
+  }
+};
+
+// Patch renderTryon to check full outfit
+const _rt = renderTryon;
+window.renderTryon = function() {
+  _rt();
+  setTimeout(checkFullOutfit, 100);
+};
+
+// Photo mode: capture stage as image
+window.photoMode = function() {
+  const stage = document.getElementById('character-stage');
+  if (!stage) return;
+  html2canvas(stage).then(canvas => {
+    const dataUrl = canvas.toDataURL('image/png');
+    const a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = 'outfit-' + Date.now() + '.png';
+    a.click();
+    playSound('success');
+    toast('穿搭照片已保存！📸');
+  }).catch(() => {
+    toast('截图功能暂不可用，请长按截图~');
+  });
+};
+
+// Auto-save outfit name suggestion
+window.suggestOutfitName = function() {
+  const cats = CATS.map(c => tryon[c]).filter(Boolean);
+  if (!cats.length) return '今日穿搭';
+  const colors = cats.map(c => c.color).filter(Boolean);
+  const scene = document.getElementById('scene-select')?.value || '日常';
+  const colorName = colors[0] || '';
+  const scenes = {daily:'日常',work:'通勤',date:'约会',party:'派对',sport:'运动'};
+  return (scenes[scene] || scene) + (colorName ? colorName : '') + '装';
+};
+
+// Auto-fill outfit name
+window.autofillOutfitName = function() {
+  document.getElementById('outfit-name-input').value = suggestOutfitName();
+};
+
+// Patch showNewOutfitModal to auto-fill name
+const _showNewOutfitModal = showNewOutfitModal;
+window.showNewOutfitModal = function() {
+  _showNewOutfitModal();
+  setTimeout(autofillOutfitName, 100);
+};
+
+// Add photo button to stage
+window.addPhotoBtn = function() {
+  const stage = document.getElementById('character-stage');
+  if (!stage) return;
+  const btn = document.createElement('button');
+  btn.className = 'photo-btn';
+  btn.innerHTML = '📷';
+  btn.title = '保存穿搭照片';
+  btn.onclick = photoMode;
+  stage.appendChild(btn);
+};
+
+// Patch init
+const _init6 = init;
+window.init = function() {
+  _init6();
+  addPhotoBtn();
+};
+
+// Share outfit as text
+window.shareOutfit = function(id) {
+  const o = outfits.find(x => x.id == id);
+  if (!o) return;
+  const text = '✨ 我的今日穿搭「' + o.name + '」：' + o.items.map(i => CAT_NAMES[i.cat]).join(' + ') + ' #奇迹暖暖 #穿搭乐园';
+  if (navigator.share) {
+    navigator.share({ title: '我的穿搭', text });
+  } else {
+    navigator.clipboard.writeText(text).then(() => toast('搭配文字已复制！'));
+  }
+};
+
+// Add share button to outfit cards
+const _ro = renderOutfits;
+window.renderOutfits = function() {
+  const html = _ro.toString();
+  // Will be handled by patch below
+  _ro();
 };
 
 init();
