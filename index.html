@@ -262,8 +262,7 @@ body{scroll-behavior:smooth;}
       <option value="daily">日常</option><option value="work">上班</option><option value="date">约会</option><option value="party">聚会</option><option value="sport">运动</option>
     </select>
     <button class="save-btn" onclick="saveTodayOutfit()">💾 保存</button>
-<!-- Sound toggle button -->
-<button class="sound-toggle" id="sound-btn" onclick="toggleSound()" title="音效">🔇</button>
+
 
   </div>
   <div class="weather-strip">
@@ -281,28 +280,22 @@ body{scroll-behavior:smooth;}
       <input type="file" id="img-upload" accept="image/*" multiple style="display:none" onchange="handleUpload(this)">
       <div class="category-tabs" id="cat-tabs">
         <button class="cat-tab active" data-cat="all">全部</button>
-<!-- Sound toggle button -->
-<button class="sound-toggle" id="sound-btn" onclick="toggleSound()" title="音效">🔇</button>
+
 
         <button class="cat-tab" data-cat="top">👕 上衣</button>
-<!-- Sound toggle button -->
-<button class="sound-toggle" id="sound-btn" onclick="toggleSound()" title="音效">🔇</button>
+
 
         <button class="cat-tab" data-cat="bottom">👖 下装</button>
-<!-- Sound toggle button -->
-<button class="sound-toggle" id="sound-btn" onclick="toggleSound()" title="音效">🔇</button>
+
 
         <button class="cat-tab" data-cat="dress">👗 连衣裙</button>
-<!-- Sound toggle button -->
-<button class="sound-toggle" id="sound-btn" onclick="toggleSound()" title="音效">🔇</button>
+
 
         <button class="cat-tab" data-cat="shoes">👟 鞋子</button>
-<!-- Sound toggle button -->
-<button class="sound-toggle" id="sound-btn" onclick="toggleSound()" title="音效">🔇</button>
+
 
         <button class="cat-tab" data-cat="hat">🎩 配饰</button>
-<!-- Sound toggle button -->
-<button class="sound-toggle" id="sound-btn" onclick="toggleSound()" title="音效">🔇</button>
+
 
       </div>
       <div class="clothes-grid" id="wardrobe-grid"></div>
@@ -328,12 +321,10 @@ body{scroll-behavior:smooth;}
         </div>
         <div class="tryon-controls">
           <button class="ctrl-btn secondary" onclick="showOutfitSelector()">➕ 添加到搭配</button>
-<!-- Sound toggle button -->
-<button class="sound-toggle" id="sound-btn" onclick="toggleSound()" title="音效">🔇</button>
+
 
           <button class="ctrl-btn primary" onclick="clearTryon()">🗑️ 清空</button>
-<!-- Sound toggle button -->
-<button class="sound-toggle" id="sound-btn" onclick="toggleSound()" title="音效">🔇</button>
+
 
         </div>
         <div class="wardrobe-mini" id="tryon-mini"></div>
@@ -341,24 +332,19 @@ body{scroll-behavior:smooth;}
           <div class="card-title">快速选择</div>
           <div style="display:flex;gap:6px;flex-wrap:wrap;">
             <button class="ctrl-btn secondary" style="font-size:11px;padding:6px 12px;" onclick="quickSelect('top')">👕 上衣</button>
-<!-- Sound toggle button -->
-<button class="sound-toggle" id="sound-btn" onclick="toggleSound()" title="音效">🔇</button>
+
 
             <button class="ctrl-btn secondary" style="font-size:11px;padding:6px 12px;" onclick="quickSelect('bottom')">👖 下装</button>
-<!-- Sound toggle button -->
-<button class="sound-toggle" id="sound-btn" onclick="toggleSound()" title="音效">🔇</button>
+
 
             <button class="ctrl-btn secondary" style="font-size:11px;padding:6px 12px;" onclick="quickSelect('dress')">👗 连衣裙</button>
-<!-- Sound toggle button -->
-<button class="sound-toggle" id="sound-btn" onclick="toggleSound()" title="音效">🔇</button>
+
 
             <button class="ctrl-btn secondary" style="font-size:11px;padding:6px 12px;" onclick="quickSelect('shoes')">👟 鞋子</button>
-<!-- Sound toggle button -->
-<button class="sound-toggle" id="sound-btn" onclick="toggleSound()" title="音效">🔇</button>
+
 
             <button class="ctrl-btn secondary" style="font-size:11px;padding:6px 12px;" onclick="quickSelect('hat')">🎩 配饰</button>
-<!-- Sound toggle button -->
-<button class="sound-toggle" id="sound-btn" onclick="toggleSound()" title="音效">🔇</button>
+
 
           </div>
         </div>
@@ -370,13 +356,11 @@ body{scroll-behavior:smooth;}
 <div id="outfit-calendar-bar" style="margin-bottom:12px;">
   <div class="cal-nav">
     <button onclick="calNav(-1)">◀</button>
-<!-- Sound toggle button -->
-<button class="sound-toggle" id="sound-btn" onclick="toggleSound()" title="音效">🔇</button>
+
 
     <span id="cal-month-str" style="font-size:13px;font-weight:700;color:var(--pink-deep);"></span>
     <button onclick="calNav(1)">▶</button>
-<!-- Sound toggle button -->
-<button class="sound-toggle" id="sound-btn" onclick="toggleSound()" title="音效">🔇</button>
+
 
   </div>
   <div class="cal-grid" id="cal-grid"></div>
@@ -417,16 +401,13 @@ body{scroll-behavior:smooth;}
         <div class="card-title">💾 数据管理</div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;">
           <button class="ctrl-btn secondary" style="flex:1;" onclick="exportData()">📤 导出</button>
-<!-- Sound toggle button -->
-<button class="sound-toggle" id="sound-btn" onclick="toggleSound()" title="音效">🔇</button>
+
 
           <button class="ctrl-btn secondary" style="flex:1;" onclick="document.getElementById('import-file').click()">📥 导入</button>
-<!-- Sound toggle button -->
-<button class="sound-toggle" id="sound-btn" onclick="toggleSound()" title="音效">🔇</button>
+
 
           <button class="ctrl-btn primary" style="flex:1;" onclick="clearAll()">🗑️ 清空</button>
-<!-- Sound toggle button -->
-<button class="sound-toggle" id="sound-btn" onclick="toggleSound()" title="音效">🔇</button>
+
 
         </div>
         <input type="file" id="import-file" accept=".json" style="display:none" onchange="handleImport(this)">
@@ -443,19 +424,16 @@ body{scroll-behavior:smooth;}
 <div class="modal-overlay hidden" id="quick-select-modal">
   <div class="modal">
     <button class="modal-close" onclick="closeQuickSelect()">×</button>
-<!-- Sound toggle button -->
-<button class="sound-toggle" id="sound-btn" onclick="toggleSound()" title="音效">🔇</button>
+
 
     <h3>选择<span id="qs-cat-title"></span></h3>
     <div id="quick-select-content"></div>
     <div class="modal-actions">
       <button class="ctrl-btn secondary" onclick="closeQuickSelect()">取消</button>
-<!-- Sound toggle button -->
-<button class="sound-toggle" id="sound-btn" onclick="toggleSound()" title="音效">🔇</button>
+
 
       <button class="ctrl-btn primary" onclick="confirmQuickSelect()">确定</button>
-<!-- Sound toggle button -->
-<button class="sound-toggle" id="sound-btn" onclick="toggleSound()" title="音效">🔇</button>
+
 
     </div>
   </div>
@@ -463,8 +441,7 @@ body{scroll-behavior:smooth;}
 <div class="modal-overlay hidden" id="new-outfit-modal">
   <div class="modal">
     <button class="modal-close" onclick="closeNewOutfitModal()">×</button>
-<!-- Sound toggle button -->
-<button class="sound-toggle" id="sound-btn" onclick="toggleSound()" title="音效">🔇</button>
+
 
     <h3>创建新搭配</h3>
     <div style="margin-bottom:12px;">
@@ -473,12 +450,10 @@ body{scroll-behavior:smooth;}
     <div id="new-outfit-selectors"></div>
     <div class="modal-actions">
       <button class="ctrl-btn secondary" onclick="closeNewOutfitModal()">取消</button>
-<!-- Sound toggle button -->
-<button class="sound-toggle" id="sound-btn" onclick="toggleSound()" title="音效">🔇</button>
+
 
       <button class="ctrl-btn primary" onclick="saveNewOutfit()">保存搭配</button>
-<!-- Sound toggle button -->
-<button class="sound-toggle" id="sound-btn" onclick="toggleSound()" title="音效">🔇</button>
+
 
     </div>
   </div>
@@ -693,11 +668,9 @@ function renderOutfits() {
     const thumbs = o.items.slice(0,4).map(i => '<img src="'+i.data+'">').join('');
     const tags = o.items.map(i => '<span class="outfit-tag">'+CAT_NAMES[i.cat]+'</span>').join('');
     return '<div class="outfit-card" id="outfit-'+o.id+'" style="animation-delay:'+(i*0.05)+'s"><div class="outfit-thumb">'+thumbs+'</div><div class="outfit-info"><div class="outfit-name">'+o.name+'</div><div class="outfit-items">'+tags+'</div></div><div class="outfit-actions"><button class="outfit-action-btn wear" onclick="wearOutfit(\''+o.id+'\')" title="试穿">✨</button>
-<!-- Sound toggle button -->
-<button class="sound-toggle" id="sound-btn" onclick="toggleSound()" title="音效">🔇</button>
+
 <button class="outfit-action-btn delete" onclick="deleteOutfit(\''+o.id+'\')" title="删除">×</button>
-<!-- Sound toggle button -->
-<button class="sound-toggle" id="sound-btn" onclick="toggleSound()" title="音效">🔇</button>
+
 </div></div>';
   }).join('');
 }
@@ -1071,14 +1044,11 @@ window.addSortBar = function() {
   sortBar.className = 'sort-bar';
   sortBar.id = 'sort-bar';
   sortBar.innerHTML = '<span style="font-size:11px;color:var(--text-sec);">排序：</span><button class="sort-btn active" data-sort="newest" onclick="sortWardrobe(\x27newest\x27)">最新</button>
-<!-- Sound toggle button -->
-<button class="sound-toggle" id="sound-btn" onclick="toggleSound()" title="音效">🔇</button>
+
 <button class="sort-btn" data-sort="oldest" onclick="sortWardrobe(\x27oldest\x27)">最旧</button>
-<!-- Sound toggle button -->
-<button class="sound-toggle" id="sound-btn" onclick="toggleSound()" title="音效">🔇</button>
+
 <button class="sort-btn" data-sort="name" onclick="sortWardrobe(\x27name\x27)">名称</button>
-<!-- Sound toggle button -->
-<button class="sound-toggle" id="sound-btn" onclick="toggleSound()" title="音效">🔇</button>
+
 ';
   grid.parentNode.insertBefore(sortBar, grid);
 };
@@ -1654,14 +1624,11 @@ window.addSortBar = function() {
   sortBar.className = 'sort-bar';
   sortBar.id = 'sort-bar';
   sortBar.innerHTML = '<span style="font-size:11px;color:var(--text-sec);">排序：</span><button class="sort-btn active" data-sort="newest" onclick="sortWardrobe(\x27newest\x27)">最新</button>
-<!-- Sound toggle button -->
-<button class="sound-toggle" id="sound-btn" onclick="toggleSound()" title="音效">🔇</button>
+
 <button class="sort-btn" data-sort="oldest" onclick="sortWardrobe(\x27oldest\x27)">最旧</button>
-<!-- Sound toggle button -->
-<button class="sound-toggle" id="sound-btn" onclick="toggleSound()" title="音效">🔇</button>
+
 <button class="sort-btn" data-sort="name" onclick="sortWardrobe(\x27name\x27)">名称</button>
-<!-- Sound toggle button -->
-<button class="sound-toggle" id="sound-btn" onclick="toggleSound()" title="音效">🔇</button>
+
 ';
   grid.parentNode.insertBefore(sortBar, grid);
 };
