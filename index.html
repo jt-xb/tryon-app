@@ -667,11 +667,7 @@ function renderOutfits() {
   list.innerHTML = outfits.map((o,i) => {
     const thumbs = o.items.slice(0,4).map(i => '<img src="'+i.data+'">').join('');
     const tags = o.items.map(i => '<span class="outfit-tag">'+CAT_NAMES[i.cat]+'</span>').join('');
-    return '<div class="outfit-card" id="outfit-'+o.id+'" style="animation-delay:'+(i*0.05)+'s"><div class="outfit-thumb">'+thumbs+'</div><div class="outfit-info"><div class="outfit-name">'+o.name+'</div><div class="outfit-items">'+tags+'</div></div><div class="outfit-actions"><button class="outfit-action-btn wear" onclick="wearOutfit(\''+o.id+'\')" title="试穿">✨</button>
-
-<button class="outfit-action-btn delete" onclick="deleteOutfit(\''+o.id+'\')" title="删除">×</button>
-
-</div></div>';
+    return '<div class="outfit-card" id="outfit-'+o.id+'" style="animation-delay:'+(i*0.05)+'s"><div class="outfit-thumb">'+thumbs+'</div><div class="outfit-info"><div class="outfit-name">'+o.name+'</div><div class="outfit-items">'+tags+'</div></div><div class="outfit-actions"><button class="outfit-action-btn wear" onclick="wearOutfit(\''+o.id+'\')" title="试穿">✨</button>\n\n<button class="outfit-action-btn delete" onclick="deleteOutfit(\''+o.id+'\')" title="删除">×</button>\n\n</div></div>';
   }).join('');
 }
 function wearOutfit(id) {
@@ -1043,13 +1039,7 @@ window.addSortBar = function() {
   const sortBar = document.createElement('div');
   sortBar.className = 'sort-bar';
   sortBar.id = 'sort-bar';
-  sortBar.innerHTML = '<span style="font-size:11px;color:var(--text-sec);">排序：</span><button class="sort-btn active" data-sort="newest" onclick="sortWardrobe(\x27newest\x27)">最新</button>
-
-<button class="sort-btn" data-sort="oldest" onclick="sortWardrobe(\x27oldest\x27)">最旧</button>
-
-<button class="sort-btn" data-sort="name" onclick="sortWardrobe(\x27name\x27)">名称</button>
-
-';
+  sortBar.innerHTML = '<span style="font-size:11px;color:var(--text-sec);">排序：</span><button class="sort-btn active" data-sort="newest" onclick="sortWardrobe(\x27newest\x27)">最新</button>\n\n<button class="sort-btn" data-sort="oldest" onclick="sortWardrobe(\x27oldest\x27)">最旧</button>\n\n<button class="sort-btn" data-sort="name" onclick="sortWardrobe(\x27name\x27)">名称</button>\n\n';
   grid.parentNode.insertBefore(sortBar, grid);
 };
 
@@ -1623,13 +1613,7 @@ window.addSortBar = function() {
   const sortBar = document.createElement('div');
   sortBar.className = 'sort-bar';
   sortBar.id = 'sort-bar';
-  sortBar.innerHTML = '<span style="font-size:11px;color:var(--text-sec);">排序：</span><button class="sort-btn active" data-sort="newest" onclick="sortWardrobe(\x27newest\x27)">最新</button>
-
-<button class="sort-btn" data-sort="oldest" onclick="sortWardrobe(\x27oldest\x27)">最旧</button>
-
-<button class="sort-btn" data-sort="name" onclick="sortWardrobe(\x27name\x27)">名称</button>
-
-';
+  sortBar.innerHTML = '<span style="font-size:11px;color:var(--text-sec);">排序：</span><button class="sort-btn active" data-sort="newest" onclick="sortWardrobe(\x27newest\x27)">最新</button>\n\n<button class="sort-btn" data-sort="oldest" onclick="sortWardrobe(\x27oldest\x27)">最旧</button>\n\n<button class="sort-btn" data-sort="name" onclick="sortWardrobe(\x27name\x27)">名称</button>\n\n';
   grid.parentNode.insertBefore(sortBar, grid);
 };
 
